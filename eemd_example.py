@@ -13,6 +13,8 @@ if __name__ == "__main__":
     # ceemdan = CEEMDAN()
     # cIMFs = ceemdan(s)
 
+    np.random.seed(0)
+
     t = np.linspace(0, 1, 200)
 
     sin = lambda x, p: np.sin(2 * np.pi * x * t + p)
@@ -23,22 +25,29 @@ if __name__ == "__main__":
     S += t ** 2.1 - t
 
     # Execute EEMD on S
-    eemd = EEMD()
+    eemd = CEEMDAN()
     # eIMFs = eemd(s)
-    eIMFs = eemd.eemd(S, t)
+    eIMFs = eemd.ceemdan(S, t)
     nIMFs = eIMFs.shape[0]
 
-
+    print('number of IMFs:', nIMFs)
     # Plot results
     plt.figure(figsize=(12,9))
-    plt.subplot(nIMFs+1, 1, 1)
+    plt.subplot(nIMFs+2, 1, 1)
     plt.plot(t, S, 'r')
+    plt.ylabel("Original")
+
+    reconstructed_points = np.sum(eIMFs, axis=0)
 
     for n in range(nIMFs):
-        plt.subplot(nIMFs+1, 1, n+2)
+        plt.subplot(nIMFs+2, 1, n+2)
         plt.plot(t, eIMFs[n], 'g')
         plt.ylabel("eIMF %i" %(n+1))
         plt.locator_params(axis='y', nbins=5)
+
+    plt.subplot(nIMFs+2, 1, nIMFs+2)
+    plt.plot(t, reconstructed_points, 'r')
+    plt.ylabel("Reconstructed")
 
     plt.xlabel("Time [s]")
     plt.tight_layout()
