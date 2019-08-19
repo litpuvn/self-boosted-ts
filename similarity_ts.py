@@ -6,4 +6,6 @@ from fastdtw import fastdtw
 x = np.array([[1,1], [2,2], [3,3], [4,4], [5,5]])
 y = np.array([[2,2], [3,3], [4,4]])
 distance, path = fastdtw(x, y, dist=euclidean)
+self_distance, path = fastdtw(x, x, dist=euclidean)
 print(distance)
+print('self distance:', self_distance)
