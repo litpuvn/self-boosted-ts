@@ -4,6 +4,10 @@ from PyEMD import CEEMDAN
 import pylab as plt
 
 import numpy as np
+from fastdtw import fastdtw
+from scipy.spatial.distance import euclidean
+from fastdtw import fastdtw
+
 
 if __name__ == "__main__":
     # s = np.random.random(100)
@@ -44,6 +48,10 @@ if __name__ == "__main__":
         plt.plot(t, eIMFs[n], 'g')
         plt.ylabel("eIMF %i" %(n+1))
         plt.locator_params(axis='y', nbins=5)
+
+        distance, _ = fastdtw(S, eIMFs[n], dist=euclidean)
+
+        print('euclidean distance to original series:', distance)
 
     plt.subplot(nIMFs+2, 1, nIMFs+2)
     plt.plot(t, reconstructed_points, 'r')
