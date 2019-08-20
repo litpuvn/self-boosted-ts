@@ -19,10 +19,10 @@ if __name__ == "__main__":
     # reconstructed_points = np.sum(eIMFs, axis=0)
 
     # Execute EEMD on S
-    eemd = CEEMDAN(trials=2, epsilon=0.005, ext_EMD=None)
+    eemd = CEEMDAN(trials=100, epsilon=0.005, ext_EMD=None)
     eIMFs = eemd.ceemdan(S=time_series_values, T=time_values, max_imf=-1)
     nIMFs = eIMFs.shape[0]
-
+    nElements = eIMFs.shape[1]
     print('number of IMFs:', nIMFs)
 
     plt.figure(figsize=(12, 9))
@@ -45,6 +45,7 @@ if __name__ == "__main__":
         corr_data.append(corr)
         print("imf", n, '-euclidean distance to original series:', distance, "; corr:", corr, ";p-value:", pval)
 
+        np.savetxt("data/eimf/norm-2011-eIMF-" + str(n) + ".csv", eIMFs[n], delimiter=",")
 
     # plt.subplot(nIMFs+2, 1, nIMFs+2)
     # plt.plot(t, reconstructed_points, 'r')

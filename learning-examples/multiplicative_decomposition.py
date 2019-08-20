@@ -105,8 +105,21 @@ df = (df
        .mean()
        .interpolate('linear'))
 
+# result = seasonal_decompose(df, model='multiplicative', freq=35039)
 result = seasonal_decompose(df, model='multiplicative')
+
+seasonal_component = result.seasonal
+trend_component = result.trend
+residual_component = result.resid
+
+reconstructed = pd.DataFrame(seasonal_component.values*trend_component.values*residual_component.values,
+                             columns=seasonal_component.columns,
+                             index=seasonal_component.index)
 
 
 result.plot()
+pyplot.show()
+
+
+reconstructed.plot()
 pyplot.show()
