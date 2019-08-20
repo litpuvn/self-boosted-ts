@@ -27,6 +27,7 @@ with open(path) as file_pointer:
             if len(non_zero) < 1:
                 print('dropping row:', idx)
                 continue
-            avg = np.sum(numerical_data, axis=0) / len(numerical_data)
-            writer.writerow([my_date, avg / 4])
-            print("datetime:", my_date, "average:", avg)
+            # avg = np.sum(numerical_data, axis=0) / len(numerical_data)
+            avg2 = np.mean(non_zero)
+            writer.writerow([my_date, avg2])
+            print("datetime:", my_date, "average:", avg2)
