@@ -7,6 +7,7 @@ import numpy as np
 from fastdtw import fastdtw
 from scipy.spatial.distance import euclidean
 from fastdtw import fastdtw
+from scipy.stats import pearsonr
 
 
 if __name__ == "__main__":
@@ -43,6 +44,7 @@ if __name__ == "__main__":
 
     reconstructed_points = np.sum(eIMFs, axis=0)
 
+    corr_data = []
     for n in range(nIMFs):
         plt.subplot(nIMFs+2, 1, n+2)
         plt.plot(t, eIMFs[n], 'g')
@@ -50,8 +52,9 @@ if __name__ == "__main__":
         plt.locator_params(axis='y', nbins=5)
 
         distance, _ = fastdtw(S, eIMFs[n], dist=euclidean)
-
-        print("imf", n, '-euclidean distance to original series:', distance)
+        corr, pval = pearsonr(S, eIMFs[n])
+        corr_data.append(corr)
+        print("imf", n, '-euclidean distance to original series:', distance, "; corr:", corr, ";p-value:", pval)
 
     plt.subplot(nIMFs+2, 1, nIMFs+2)
     plt.plot(t, reconstructed_points, 'r')
@@ -60,4 +63,16 @@ if __name__ == "__main__":
     plt.xlabel("Time [s]")
     plt.tight_layout()
     # plt.savefig('output/eemd_example', dpi=120)
+    plt.show()
+
+
+    # plot second figure
+    fig = plt.figure()
+    ax = plt.axes()
+
+    x = np.linspace(0, 1, len(corr_data))
+    corr_data = sorted(corr_data)
+    print('data:', corr_data)
+
+    ax.plot(x, corr_data)
     plt.show()
