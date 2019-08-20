@@ -29,7 +29,7 @@ if __name__ == "__main__":
     S += t ** 2.1 - t
 
     # Execute EEMD on S
-    eemd = CEEMDAN()
+    eemd = CEEMDAN(trials=1)
     # eIMFs = eemd(s)
     eIMFs = eemd.ceemdan(S, t)
     nIMFs = eIMFs.shape[0]
@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
         distance, _ = fastdtw(S, eIMFs[n], dist=euclidean)
 
-        print('euclidean distance to original series:', distance)
+        print("imf", n, '-euclidean distance to original series:', distance)
 
     plt.subplot(nIMFs+2, 1, nIMFs+2)
     plt.plot(t, reconstructed_points, 'r')
