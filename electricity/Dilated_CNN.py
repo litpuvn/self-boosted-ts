@@ -209,3 +209,28 @@ eval_df['actual'] = np.transpose(y_test).ravel()
 eval_df[['prediction', 'actual']] = scaler.inverse_transform(eval_df[['prediction', 'actual']])
 eval_df.head()
 
+def mape(predictions, actuals):
+    """Mean absolute percentage error"""
+    return ((predictions - actuals).abs() / actuals).mean()
+
+
+
+
+
+mape(eval_df['prediction'], eval_df['actual'])
+
+
+
+
+
+eval_df[eval_df.timestamp<'2014-11-08'].plot(x='timestamp', y=['prediction', 'actual'], style=['r', 'b'], figsize=(15, 8))
+plt.xlabel('time', fontsize=12)
+plt.ylabel('electricity', fontsize=12)
+plt.show()
+
+
+
+
+
+
+
