@@ -16,6 +16,14 @@ model.add(Dense(24))
 
 model.summary()
 
-model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'acc'])
-
-
+# model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'acc'])
+#
+#
+# n = 10  # n features
+# x = Input(shape=(n, 24, ))
+# td1 = TimeDistributed(Conv1D(filters=5, kernel_size=3, activation='relu')(x))
+# mxpooling = MaxPooling1D(pool_size=2)(td1)
+# td2 = TimeDistributed(mxpooling)
+# td3 = TimeDistributed(Flatten()(td2))
+# lstm1 = LSTM(50, stateful=True, return_sequences=True)(td3)
+# lstm2 = LSTM(10, stateful=True, return_sequences=True)(lstm1)
