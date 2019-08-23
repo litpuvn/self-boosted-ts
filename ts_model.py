@@ -1,3 +1,4 @@
+from keras.callbacks import EarlyStopping
 from keras.engine.topology import Input
 from keras.layers.convolutional import Conv1D
 from keras.layers.core import Flatten, Dense, Activation
@@ -11,26 +12,29 @@ from keras.optimizers import Adam
 from kgp.layers import GP
 from kgp.models import Model
 from kgp.losses import gen_gp_loss
+from kgp.utils.experiment import train
 
 n = 10  # n features
 x = Input(shape=(n, 2))
 
-# em = Embedding(input_dim=1000, output_dim=64)(x)
 conv = Conv1D(filters=5, kernel_size=3, activation='relu')(x)
 mp = MaxPooling1D(pool_size=2)(conv)
-shared_dense = Conv1D(filters=5, kernel_size=3, activation='relu')(mp)
+conv2 = Conv1D(filters=5, kernel_size=3, activation='relu')(mp)
+mp = MaxPooling1D(pool_size=2)(conv2)
 
+lstm1 = LSTM(50, return_sequences=True)(mp)
+lstm2 = LSTM(10, return_sequences=True)(lstm1)
 
-sub1 = Dense(16)(shared_dense)
-sub1 = LSTM(50, return_sequences=True)(sub1)
-sub1 = LSTM(10, return_sequences=True)(sub1)
+shared_dense = Dense(16)(lstm2)
 
 
 sub2 = Dense(16)(shared_dense)
 sub3 = Dense(16)(shared_dense)
-# out1 = Dense(1)(sub1)
 
-out1 = SimpleRNN(units=32)(sub1)
+
+out1 = SimpleRNN(units=32)(shared_dense)
+
+
 out2 = Dense(1)(sub2)
 out3 = Dense(1)(sub3)
 
@@ -45,7 +49,8 @@ outputs = [gp(out1), out2, out3]
 model = Model(inputs=x, outputs=outputs)
 
 
-model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'acc'])
-
+model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'mse'], loss_weights=[0.5, 0.25, 0.25])
+# Callbacks
+# callbacks = [EarlyStopping(monitor='val_mse', patience=10)]
 
 model.summary()
