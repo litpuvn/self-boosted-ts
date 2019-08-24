@@ -3,22 +3,33 @@ import pandas as pd
 import os
 from collections import UserDict
 
+from pandas.core.indexes.datetimes import DatetimeIndex
+
+
 def load_data(data_dir):
     """Load the GEFCom 2014 energy load data"""
 
-    energy = pd.read_csv(os.path.join(data_dir, 'formatted_energy.csv'), parse_dates=['timestamp'])
+    imf1 = pd.read_csv(os.path.join(data_dir, 'norm-2011-eIMF-1.csv'), header=None)
+
+    imf2 = pd.read_csv(os.path.join(data_dir, 'norm-2011-eIMF-2.csv'), header=None)
 
     # Reindex the dataframe such that the dataframe has a record for every time point
     # between the minimum and maximum timestamp in the time series. This helps to
     # identify missing time periods in the data (there are none in this dataset).
 
-    energy.index = energy['timestamp']
-    energy = energy.reindex(pd.date_range(min(energy['timestamp']),
-                                          max(energy['timestamp']),
-                                          freq='H'))
-    energy = energy.drop('timestamp', axis=1)
+    # energy.index = energy['timestamp']
+    # energy = energy.reindex(pd.date_range(min(energy['timestamp']),
+    #                                       max(energy['timestamp']),
+    #                                       freq='H'))
+    # energy = energy.drop('timestamp', axis=1)
+    df = pd.concat([imf1, imf2], axis=1)
+    df.columns = ["imf1", "imf2"]
 
-    return energy
+    dt_idx = DatetimeIndex(freq='H', start='2011-01-01 00:00:00', end='2011-12-31 23:00:00')
+
+    df.index = dt_idx
+
+    return df
 
 
 def mape(predictions, actuals):
