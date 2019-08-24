@@ -1,4 +1,6 @@
 from collections import UserDict
+import pandas as pd
+import numpy as np
 
 
 class TimeSeriesTensor(UserDict):
@@ -84,13 +86,13 @@ class TimeSeriesTensor(UserDict):
 
         inputs = {}
         y = dataframe['target']
-        y = y.as_matrix()
+        y = y.values
         inputs['target'] = y
 
         for name, structure in self.tensor_structure.items():
             rng = structure[0]
             cols = structure[1]
-            tensor = dataframe[name][cols].as_matrix()
+            tensor = dataframe[name][cols].values
             if rng is None:
                 tensor = tensor.reshape(tensor.shape[0], len(cols))
             else:
