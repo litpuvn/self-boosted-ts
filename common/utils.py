@@ -55,9 +55,6 @@ def split_train_validation_test(multi_time_series_df, valid_start_time, test_sta
 
     print(train_inputs.dataframe.head())
 
-    # similarly for validation set
-    # scaler = MinMaxScaler()
-    # scaler.fit(train[['load']])
 
     look_back_dt = dt.datetime.strptime(valid_start_time, '%Y-%m-%d %H:%M:%S') - dt.timedelta(hours=time_step_lag - 1)
     valid = multi_time_series_df.copy()[(multi_time_series_df.index >= look_back_dt) & (multi_time_series_df.index < test_start_time)]
