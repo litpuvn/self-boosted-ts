@@ -1,8 +1,10 @@
 from keras.callbacks import EarlyStopping
-
+import pandas as pd
 from common.TimeseriesTensor import TimeSeriesTensor
 from common.utils import load_data, split_train_validation_test
 from ts_model import create_model
+from kgp.metrics import root_mean_squared_error as RMSE
+import matplotlib.pyplot as plt
 
 time_step_lag = 6
 HORIZON = 3
@@ -44,12 +46,12 @@ print("input_X shape", X_train.shape)
 
 # LATENT_DIM = 5
 BATCH_SIZE = 32
-EPOCHS = 10
+EPOCHS = 1
 
 model = create_model(nb_train_samples=len(X_train), batch_size=32)
 earlystop = EarlyStopping(monitor='val_mse', patience=10)
 
-model.fit(X_train,
+history = model.fit(X_train,
           [y1_train, y2_train, y3_train],
           batch_size=BATCH_SIZE,
           epochs=EPOCHS,
@@ -58,13 +60,23 @@ model.fit(X_train,
           verbose=1)
 
 
-# train = energy.copy()[energy.index < valid_start_dt][['load']]
+plot_df = pd.DataFrame.from_dict({'train_loss': history.history['loss'], 'val_loss': history.history['val_loss']})
+plot_df.plot(logy=True, figsize=(10, 10), fontsize=12)
+plt.xlabel('epoch', fontsize=12)
+plt.ylabel('loss', fontsize=12)
+plt.show()
 
-from sklearn.preprocessing import MinMaxScaler
-# transforming data
-# scaler = MinMaxScaler()
-# scaler.fit(train[['load']])
-# train[['load']] = scaler.transform(train)
-#
-# tensor_structure = {'X':(range(-time_step_lag+1, 1), ['load'])}
-# train_inputs = TimeSeriesTensor(train, 'load', HORIZON, tensor_structure)
+
+# Finetune the model
+model.finetune(*X_train, batch_size=BATCH_SIZE, gp_n_iter=100, verbose=1)
+
+# Test the model
+X_test = test_inputs['X']
+y1_test = test_inputs['target_load']
+y2_test = test_inputs['target_imf1']
+y3_test = test_inputs['target_imf2']
+
+y1_preds, y2_preds, y3_preds = model.predict(X_test)
+
+rmse_predict = RMSE(y1_test, y1_preds)
+print('Test predict RMSE:', rmse_predict)

@@ -6,7 +6,7 @@ from keras.layers.embeddings import Embedding
 from keras.layers.pooling import MaxPooling1D
 from keras.layers.wrappers import TimeDistributed
 from keras.models import Sequential
-from keras.layers.recurrent import LSTM, SimpleRNN
+from keras.layers.recurrent import LSTM, SimpleRNN, GRU
 from keras.optimizers import Adam
 
 from kgp.layers import GP
@@ -23,8 +23,8 @@ def create_model(nb_train_samples=512, batch_size=32):
     # conv2 = Conv1D(filters=5, kernel_size=3, activation='relu')(mp)
     # mp = MaxPooling1D(pool_size=2)(conv2)
 
-    lstm1 = LSTM(50, return_sequences=True)(mp)
-    lstm2 = LSTM(10, return_sequences=True)(lstm1)
+    lstm1 = GRU(50, return_sequences=True)(mp)
+    lstm2 = GRU(10, return_sequences=True)(lstm1)
 
     shared_dense = Dense(16, name="shared_layer")(lstm2)
 
