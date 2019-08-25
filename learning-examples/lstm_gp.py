@@ -4,6 +4,9 @@ GP-LSTM regression on Actuator data.
 from __future__ import print_function
 
 import numpy as np
+
+from common.gp_log import store_training_loss, store_predict_points
+
 np.random.seed(42)
 
 # Keras
@@ -92,10 +95,12 @@ def main():
                     checkpoint='lstm', checkpoint_monitor='val_mse',
                     epochs=epochs, batch_size=batch_size, verbose=2)
 
+    store_training_loss(history=history, filepath="output/training_loss.csv")
+
     # Finetune the model
     model.finetune(*data['train'],
                    batch_size=batch_size,
-                   gp_n_iter=100,
+                   gp_n_iter=1,
                    verbose=0)
 
     # Test the model
@@ -103,7 +108,7 @@ def main():
     y_preds = model.predict(X_test)
     rmse_predict = RMSE(y_test, y_preds)
     print('Test predict RMSE:', rmse_predict)
-
+    store_predict_points(y_test, y_preds, 'output/test_mtl_prediction.csv')
 
 if __name__ == '__main__':
     main()
