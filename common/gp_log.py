@@ -4,25 +4,25 @@ import csv
 def store_training_loss(history, filepath):
 
     loss = history.history['loss']
-    mse_loss = history.history['mse']
-    nlml_loss = history.history['nlml']
-    gp_1_mse = history.history['gp_1_mse']
-    gp_1_nlml = history.history['gp_1_nlml']
-
+    # mse_loss = history.history['mse']
+    # nlml_loss = history.history['nlml']
+    # gp_1_mse = history.history['gp_1_mse']
+    # gp_1_nlml = history.history['gp_1_nlml']
+    # val_nlml = history.history['val_nlml']
+    # val_mse = history.history['val_mse']
     epoches = int(history.params['epochs'])
     if epoches > len(loss):
         epoches = len(loss)
 
     with open(filepath, 'w', newline='') as writer:
         csv_writer = csv.writer(writer, delimiter=',')
-        csv_writer.writerow(["epoch", "mse", "nlml", "gp_1_mse", "gp_1_nlml", "loss"])
+        csv_writer.writerow(history.keys())
         for i in range(epoches):
-            mse = mse_loss[i]
-            nlml = nlml_loss[i]
-            gp1_mse = gp_1_mse[i]
-            gp1_nlml = gp_1_nlml[i]
-            l = loss[i]
-            csv_writer.writerow([i, mse, nlml, gp1_mse, gp1_nlml, l])
+            data_row = []
+            for loss_metric, values in history.items():
+                data_row = data_row + [values[i]]
+
+            csv_writer.writerow(data_row)
 
 
 def store_predict_points(y_tests, y_predicts, filepath):

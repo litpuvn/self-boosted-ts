@@ -73,7 +73,7 @@ if __name__ == '__main__':
 
 
     # Finetune the model
-    model.finetune(*X_train, batch_size=BATCH_SIZE, gp_n_iter=100, verbose=1)
+    # model.finetune(X_train, y_train, batch_size=BATCH_SIZE, gp_n_iter=1, verbose=1)
 
     # Test the model
     X_test = test_inputs['X']
@@ -89,4 +89,4 @@ if __name__ == '__main__':
     rmse_predict = RMSE(y1_test, y1_preds)
     print('Test predict RMSE:', rmse_predict)
 
-    store_predict_points(y1_test, y1_preds, 'output/test_prediction.csv')
+    store_predict_points(y1_test, y1_preds, 'output/test_mtl_prediction.csv')

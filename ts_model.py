@@ -23,30 +23,31 @@ def create_model(horizon=1, nb_train_samples=512, batch_size=32):
     # conv2 = Conv1D(filters=5, kernel_size=3, activation='relu')(mp)
     # mp = MaxPooling1D(pool_size=2)(conv2)
 
-    lstm1 = GRU(50, return_sequences=True)(mp)
-    lstm2 = GRU(10, return_sequences=True)(lstm1)
+    lstm1 = GRU(16, return_sequences=True)(mp)
+    lstm2 = GRU(32, return_sequences=True)(lstm1)
 
-    shared_dense = Dense(16, name="shared_layer")(lstm2)
+    shared_dense = Dense(64, name="shared_layer")(lstm2)
 
 
     # sub2 = Dense(16, name="sub_task2")(shared_dense)
     # sub3 = Dense(16, name="sub_task3")(shared_dense)
     # sub3 = Flatten()(sub3)
 
-    sub1 = SimpleRNN(units=32, name="task1")(shared_dense)
-    sub2 = SimpleRNN(units=32, name="task2")(shared_dense)
-    sub3 = SimpleRNN(units=32, name="task3")(shared_dense)
+    sub1 = GRU(units=16, name="task1")(shared_dense)
+    sub2 = GRU(units=16, name="task2")(shared_dense)
+    sub3 = GRU(units=16, name="task3")(shared_dense)
 
-    out1_1 = Dense(1, name="out1")(sub1)
-    # out1_2 = Dense(1, name="out1_2")(sub1)
-    # out1_3 = Dense(1, name="out1_3")(sub1)
-    out2 = Dense(horizon, name="out2")(sub2)
-    out3 = Dense(horizon, name="out3")(sub3)
+    # out1_gp = Dense(1, name="out1_gp")(sub1)
+    out1 = Dense(1, name="out1")(sub1)
+    out2 = Dense(1, name="out2")(sub2)
+    out3 = Dense(1, name="out3")(sub3)
     # Gaussian setting
     gp_hypers = {'lik': -2.0, 'cov': [[-0.7], [0.0]]}
-    gp = GP(gp_hypers, batch_size=batch_size, nb_train_samples=nb_train_samples)
+    gp1 = GP(gp_hypers, batch_size=batch_size, nb_train_samples=nb_train_samples)
+    gp2 = GP(gp_hypers, batch_size=batch_size, nb_train_samples=nb_train_samples)
+    gp3 = GP(gp_hypers, batch_size=batch_size, nb_train_samples=nb_train_samples)
 
-    outputs = [gp(out1_1), out2, out3]
+    outputs = [gp1(out1), gp2(out2), gp3(out3)]
 
     model = Model(inputs=x, outputs=outputs)
 
