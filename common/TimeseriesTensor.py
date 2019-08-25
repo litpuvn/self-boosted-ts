@@ -26,7 +26,12 @@ class TimeSeriesTensor(UserDict):
 
     def __init__(self, dataset, target, H, tensor_structure, freq='H', drop_incomplete=True):
         self.dataset = dataset
-        self.target = target
+
+        if isinstance(target, list):
+            self.targets = target
+        else:
+            self.targets = [target]
+        self.target_count = len(self.targets)
         self.tensor_structure = tensor_structure
         self.tensor_names = list(tensor_structure.keys())
 
@@ -45,15 +50,16 @@ class TimeSeriesTensor(UserDict):
 
         idx_tuples = []
         for t in range(1, H + 1):
-            df['t+' + str(t)] = df[self.target].shift(t * -1, freq=freq)
-            idx_tuples.append(('target', 'y', 't+' + str(t)))
+            for i in range(self.target_count):
+                cur_target = self.targets[i]
+                df[cur_target + '_t+' + str(t)] = df[cur_target].shift(t * -1, freq=freq)
+                idx_tuples.append(('target_' + cur_target, 'y', 't+' + str(t)))
 
         for name, structure in self.tensor_structure.items():
             rng = structure[0]
             dataset_cols = structure[1]
 
             for col in dataset_cols:
-
                 # do not shift non-sequential 'static' features
                 if rng is None:
                     df['context_' + col] = df[col]
@@ -85,9 +91,11 @@ class TimeSeriesTensor(UserDict):
         # "target", the input tensor can be acccessed with model_inputs['target']
 
         inputs = {}
-        y = dataframe['target']
-        y = y.values
-        inputs['target'] = y
+        for i in range(self.target_count):
+            cur_target = self.targets[i]
+            y = dataframe['target_' + cur_target]
+            y = y.values
+            inputs['target_' + cur_target] = y
 
         for name, structure in self.tensor_structure.items():
             rng = structure[0]

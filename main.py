@@ -19,40 +19,33 @@ train_inputs, valid_inputs, test_inputs = split_train_validation_test(multi_time
                                                  valid_start_time=valid_start_dt,
                                                  test_start_time=test_start_dt,
                                                  time_step_lag=time_step_lag,
+
                                                  features=["load", "imf1", "imf2"]
                                                  )
 
-# y_col = 'target'
-# X_cols = []
-# for i in range(1, time_step_lag+1):
-#     for var_name in ["load", "imf1", "imf2"]:
-#         X_cols = X_cols + [var_name + '-' + str(i)]
-#
-# # 5.Transform this Pandas dataframe into a numpy array
-# X_train = train_inputs.dataframe[X_cols].as_matrix()
-# y_train = train_inputs.dataframe[y_col].as_matrix()
-
 
 X_train = train_inputs['X']
-y_train = train_inputs['target']
+y1_train = train_inputs['target_load']
+y2_train = train_inputs['target_imf1']
+y3_train = train_inputs['target_imf2']
 # input_x = train_inputs['X']
 print("input_X shape", X_train.shape)
-print("target shape", y_train.shape)
-print("training size:", len(train_inputs['X']), 'validation', len(valid_inputs['X']), 'test size:', len(test_inputs['X']) )
-print("sum sizes", len(train_inputs['X']) + len(valid_inputs['X']) + len(test_inputs['X']))
+# print("target shape", y_train.shape)
+# print("training size:", len(train_inputs['X']), 'validation', len(valid_inputs['X']), 'test size:', len(test_inputs['X']) )
+# print("sum sizes", len(train_inputs['X']) + len(valid_inputs['X']) + len(test_inputs['X']))
 
-LATENT_DIM = 5
+# LATENT_DIM = 5
 BATCH_SIZE = 32
 EPOCHS = 10
 
 model = create_model()
-earlystop = [EarlyStopping(monitor='val_mse', patience=10)]
+earlystop = EarlyStopping(monitor='val_mse', patience=10)
 
-model.fit(train_inputs['X'],
-          train_inputs['target'],
+model.fit(X_train,
+          [y1_train, y2_train, y3_train],
           batch_size=BATCH_SIZE,
           epochs=EPOCHS,
-          validation_data=(valid_inputs['X'], valid_inputs['target']),
+          # validation_data=(valid_inputs['X'], valid_inputs['target']),
           callbacks=[earlystop],
           verbose=1)
 

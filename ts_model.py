@@ -16,30 +16,30 @@ from kgp.utils.experiment import train
 
 
 def create_model():
-    n = 19  # n features
-    x = Input(shape=(None, 3))
 
-    conv = Conv1D(filters=5, kernel_size=3, activation='relu')(x)
+    x = Input(shape=(6, 3), name="input_layer")
+    conv = Conv1D(kernel_size=3, filters=5, activation='relu')(x)
     mp = MaxPooling1D(pool_size=2)(conv)
-    conv2 = Conv1D(filters=5, kernel_size=3, activation='relu')(mp)
-    mp = MaxPooling1D(pool_size=2)(conv2)
+    # conv2 = Conv1D(filters=5, kernel_size=3, activation='relu')(mp)
+    # mp = MaxPooling1D(pool_size=2)(conv2)
 
     lstm1 = LSTM(50, return_sequences=True)(mp)
     lstm2 = LSTM(10, return_sequences=True)(lstm1)
 
-    shared_dense = Dense(16)(lstm2)
+    shared_dense = Dense(16, name="shared_layer")(lstm2)
 
 
-    sub2 = Dense(16)(shared_dense)
-    sub3 = Dense(16)(shared_dense)
+    # sub2 = Dense(16, name="sub_task2")(shared_dense)
+    # sub3 = Dense(16, name="sub_task3")(shared_dense)
+    # sub3 = Flatten()(sub3)
 
+    sub1 = SimpleRNN(units=32, name="task1")(shared_dense)
+    sub2 = SimpleRNN(units=32, name="task2")(shared_dense)
+    sub3 = SimpleRNN(units=32, name="task3")(shared_dense)
 
-    out1 = SimpleRNN(units=32)(shared_dense)
-
-
-    out2 = Dense(1)(sub2)
-    out3 = Dense(1)(sub3)
-
+    out1 = Dense(1, name="out1")(sub1)
+    out2 = Dense(1, name="out2")(sub2)
+    out3 = Dense(1, name="out3")(sub3)
     # Gaussian setting
     batch_size = 32
     nb_train_samples = 512
