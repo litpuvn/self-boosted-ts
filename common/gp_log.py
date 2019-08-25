@@ -25,7 +25,7 @@ def store_training_loss(history, filepath):
             csv_writer.writerow(data_row)
 
 
-def store_predict_points(y_tests, y_predicts, filepath):
+def flatten_test_predict(y_tests, y_predicts):
     if len(y_tests) == 1:
         y_tests = y_tests[0]
 
@@ -35,9 +35,16 @@ def store_predict_points(y_tests, y_predicts, filepath):
     if not isinstance(y_tests, np.ndarray) or not isinstance(y_predicts, np.ndarray):
         raise Exception('bad input data for y_tests or y_predicts')
 
+    y_tests = y_tests.ravel()
+    y_predicts = y_predicts.ravel()
 
     y_tests = y_tests.ravel()
     y_predicts = y_predicts.ravel()
+
+    return y_tests, y_predicts
+
+
+def store_predict_points(y_tests, y_predicts, filepath):
     n = len(y_tests)
     if n != len(y_predicts):
         raise Exception('bad testing samples and predictions')
@@ -46,7 +53,7 @@ def store_predict_points(y_tests, y_predicts, filepath):
         csv_writer = csv.writer(writer, delimiter=',')
         csv_writer.writerow(["y_test", "y_pred"])
 
-        for i in range(n):
+        for i in range(len(y_tests)):
             csv_writer.writerow([y_tests[i], y_predicts[i]])
 
         print("Done writing prediction result to", filepath)

@@ -1,12 +1,19 @@
 from keras.callbacks import EarlyStopping
 import pandas as pd
 from common.TimeseriesTensor import TimeSeriesTensor
-from common.gp_log import store_training_loss, store_predict_points
+from common.gp_log import store_training_loss, store_predict_points, flatten_test_predict
 from common.utils import load_data, split_train_validation_test
 from ts_model import create_model
 from kgp.metrics import root_mean_squared_error as RMSE
 import matplotlib.pyplot as plt
 
+
+from sklearn.metrics import explained_variance_score
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_log_error
+from sklearn.metrics import median_absolute_error
+from sklearn.metrics import r2_score
 
 if __name__ == '__main__':
 
@@ -50,7 +57,7 @@ if __name__ == '__main__':
 
     # LATENT_DIM = 5
     BATCH_SIZE = 32
-    EPOCHS = 1
+    EPOCHS = 10
 
     model = create_model(horizon=HORIZON, nb_train_samples=len(X_train), batch_size=32)
     earlystop = EarlyStopping(monitor='val_mse', patience=5)
@@ -63,7 +70,7 @@ if __name__ == '__main__':
               callbacks=[earlystop],
               verbose=1)
 
-    store_training_loss(history=history, filepath="output/training_loss.csv")
+    store_training_loss(history=history, filepath="output/training_loss_epochs_" + str(EPOCHS) + ".csv")
 
     # plot_df = pd.DataFrame.from_dict({'train_loss': history.history['loss'], 'val_loss': history.history['val_loss']})
     # plot_df.plot(logy=True, figsize=(10, 10), fontsize=12)
@@ -86,7 +93,17 @@ if __name__ == '__main__':
     y1_test = y_scaler.inverse_transform(y1_test)
     y1_preds = y_scaler.inverse_transform(y1_preds)
 
-    rmse_predict = RMSE(y1_test, y1_preds)
-    print('Test predict RMSE:', rmse_predict)
+    y1_test, y1_preds = flatten_test_predict(y1_test, y1_preds)
 
-    store_predict_points(y1_test, y1_preds, 'output/test_mtl_prediction.csv')
+    rmse_predict = RMSE(y1_test, y1_preds)
+    evs = explained_variance_score(y1_test, y1_preds)
+    mae = mean_absolute_error(y1_test, y1_preds)
+    mse = mean_squared_error(y1_test, y1_preds)
+    msle = mean_squared_log_error(y1_test, y1_preds)
+    meae = median_absolute_error(y1_test, y1_preds)
+    r_square = r2_score(y1_test, y1_preds)
+
+    print('rmse_predict:', rmse_predict, "evs:", evs, "mae:", mae,
+          "mse:", mse, "msle:", msle, "meae:", meae, "r2:", r_square)
+
+    store_predict_points(y1_test, y1_preds, 'output/test_mtl_prediction_epochs_' + str(EPOCHS) + '.csv')
