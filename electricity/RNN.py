@@ -294,3 +294,10 @@ plt.xlabel('timestamp', fontsize=12)
 plt.ylabel('load', fontsize=12)
 plt.show()
 
+from sklearn.metrics import mean_squared_error
+from math import sqrt
+
+rmse = sqrt(mean_squared_error(eval_df['actual'], eval_df['prediction']))
+print(rmse)
+
+
