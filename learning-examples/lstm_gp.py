@@ -54,7 +54,7 @@ def main():
     nb_outputs = len(data['train'][1])
     gp_input_shape = (1,)
     batch_size = 128
-    epochs = 5
+    epochs = 1
 
     nn_params = {
         'H_dim': 16,

@@ -1,6 +1,7 @@
 from keras.callbacks import EarlyStopping
 import pandas as pd
 from common.TimeseriesTensor import TimeSeriesTensor
+from common.gp_log import store_training_loss, store_predict_points
 from common.utils import load_data, split_train_validation_test
 from ts_model import create_model
 from kgp.metrics import root_mean_squared_error as RMSE
@@ -10,7 +11,7 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
 
     time_step_lag = 6
-    HORIZON = 3
+    HORIZON = 1
 
     data_dir = 'data/'
     multi_time_series = load_data(data_dir)
@@ -30,21 +31,15 @@ if __name__ == '__main__':
 
     X_train = train_inputs['X']
     y1_train = train_inputs['target_load']
-    y1_1_train = y1_train[:, 0]
-    y1_2_train = y1_train[:, 1]
-    y1_3_train = y1_train[:, 2]
     y2_train = train_inputs['target_imf1']
     y3_train = train_inputs['target_imf2']
-    y_train = [y1_1_train, y1_2_train, y1_3_train, y2_train, y3_train]
+    y_train = [y1_train, y2_train, y3_train]
 
     X_valid = valid_inputs['X']
     y1_valid = valid_inputs['target_load']
-    y1_1_valid = y1_valid[:, 0]
-    y1_2_valid = y1_valid[:, 1]
-    y1_3_valid = y1_valid[:, 2]
     y2_valid = valid_inputs['target_imf1']
     y3_valid = valid_inputs['target_imf2']
-    y_valid = [y1_1_valid, y1_2_valid, y1_3_valid, y2_valid, y3_valid]
+    y_valid = [y1_valid, y2_valid, y3_valid]
 
     # input_x = train_inputs['X']
     print("train_X shape", X_train.shape)
@@ -55,10 +50,10 @@ if __name__ == '__main__':
 
     # LATENT_DIM = 5
     BATCH_SIZE = 32
-    EPOCHS = 1
+    EPOCHS = 50
 
     model = create_model(horizon=HORIZON, nb_train_samples=len(X_train), batch_size=32)
-    earlystop = EarlyStopping(monitor='val_mse', patience=10)
+    earlystop = EarlyStopping(monitor='val_mse', patience=5)
 
     history = model.fit(X_train,
                         y_train,
@@ -68,12 +63,13 @@ if __name__ == '__main__':
               callbacks=[earlystop],
               verbose=1)
 
+    store_training_loss(history=history, filepath="output/training_loss.csv")
 
-    plot_df = pd.DataFrame.from_dict({'train_loss': history.history['loss'], 'val_loss': history.history['val_loss']})
-    plot_df.plot(logy=True, figsize=(10, 10), fontsize=12)
-    plt.xlabel('epoch', fontsize=12)
-    plt.ylabel('loss', fontsize=12)
-    plt.show()
+    # plot_df = pd.DataFrame.from_dict({'train_loss': history.history['loss'], 'val_loss': history.history['val_loss']})
+    # plot_df.plot(logy=True, figsize=(10, 10), fontsize=12)
+    # plt.xlabel('epoch', fontsize=12)
+    # plt.ylabel('loss', fontsize=12)
+    # plt.show()
 
 
     # Finetune the model
@@ -89,3 +85,5 @@ if __name__ == '__main__':
 
     rmse_predict = RMSE(y1_test, y1_preds)
     print('Test predict RMSE:', rmse_predict)
+
+    store_predict_points(y1_test, y1_preds, 'output/test_prediction.csv')

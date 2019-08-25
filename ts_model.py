@@ -37,21 +37,21 @@ def create_model(horizon=1, nb_train_samples=512, batch_size=32):
     sub2 = SimpleRNN(units=32, name="task2")(shared_dense)
     sub3 = SimpleRNN(units=32, name="task3")(shared_dense)
 
-    out1_1 = Dense(1, name="out1_1")(sub1)
-    out1_2 = Dense(1, name="out1_2")(sub1)
-    out1_3 = Dense(1, name="out1_3")(sub1)
+    out1_1 = Dense(1, name="out1")(sub1)
+    # out1_2 = Dense(1, name="out1_2")(sub1)
+    # out1_3 = Dense(1, name="out1_3")(sub1)
     out2 = Dense(horizon, name="out2")(sub2)
     out3 = Dense(horizon, name="out3")(sub3)
     # Gaussian setting
     gp_hypers = {'lik': -2.0, 'cov': [[-0.7], [0.0]]}
     gp = GP(gp_hypers, batch_size=batch_size, nb_train_samples=nb_train_samples)
 
-    outputs = [gp(out1_1), gp(out1_2), gp(out1_3), out2, out3]
+    outputs = [gp(out1_1), out2, out3]
 
     model = Model(inputs=x, outputs=outputs)
 
 
-    model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'mse'], loss_weights=[0.5, 0.5, 0.5, 0.25, 0.25])
+    model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'mse'], loss_weights=[0.5, 0.25, 0.25])
     # Callbacks
     # callbacks = [EarlyStopping(monitor='val_mse', patience=10)]
 
