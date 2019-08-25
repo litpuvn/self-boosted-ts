@@ -21,7 +21,7 @@ if __name__ == '__main__':
     valid_start_dt = '2011-09-01 00:00:00'
     test_start_dt = '2011-11-01 00:00:00'
 
-    train_inputs, valid_inputs, test_inputs = split_train_validation_test(multi_time_series,
+    train_inputs, valid_inputs, test_inputs, y_scaler = split_train_validation_test(multi_time_series,
                                                      valid_start_time=valid_start_dt,
                                                      test_start_time=test_start_dt,
                                                      time_step_lag=time_step_lag,
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     # LATENT_DIM = 5
     BATCH_SIZE = 32
-    EPOCHS = 50
+    EPOCHS = 1
 
     model = create_model(horizon=HORIZON, nb_train_samples=len(X_train), batch_size=32)
     earlystop = EarlyStopping(monitor='val_mse', patience=5)
@@ -82,6 +82,9 @@ if __name__ == '__main__':
     y3_test = test_inputs['target_imf2']
 
     y1_preds, y2_preds, y3_preds = model.predict(X_test)
+
+    y1_test = y_scaler.inverse_transform(y1_test)
+    y1_preds = y_scaler.inverse_transform(y1_preds)
 
     rmse_predict = RMSE(y1_test, y1_preds)
     print('Test predict RMSE:', rmse_predict)

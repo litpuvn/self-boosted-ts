@@ -48,6 +48,9 @@ def split_train_validation_test(multi_time_series_df, valid_start_time, test_sta
 
     train = multi_time_series_df.copy()[multi_time_series_df.index < valid_start_time]
     X_scaler = MinMaxScaler()
+    y_scaler = MinMaxScaler()
+    y_scaler.fit(train[['load']])
+
     train[['load', 'imf1', 'imf2']] = X_scaler.fit_transform(train)
 
     tensor_structure = {'X': (range(-time_step_lag + 1, 1), ['load', 'imf1', 'imf2'])}
@@ -72,7 +75,7 @@ def split_train_validation_test(multi_time_series_df, valid_start_time, test_sta
 
     print("time lag:", time_step_lag, "original_feature:", len(features))
 
-    return train_inputs, valid_inputs, test_inputs
+    return train_inputs, valid_inputs, test_inputs, y_scaler
 
 
 def mape(predictions, actuals):
