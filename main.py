@@ -28,6 +28,14 @@ X_train = train_inputs['X']
 y1_train = train_inputs['target_load']
 y2_train = train_inputs['target_imf1']
 y3_train = train_inputs['target_imf2']
+
+
+X_valid = valid_inputs['X']
+y1_valid = valid_inputs['target_load']
+y2_valid = valid_inputs['target_imf1']
+y3_valid = valid_inputs['target_imf2']
+
+
 # input_x = train_inputs['X']
 print("input_X shape", X_train.shape)
 # print("target shape", y_train.shape)
@@ -45,7 +53,7 @@ model.fit(X_train,
           [y1_train, y2_train, y3_train],
           batch_size=BATCH_SIZE,
           epochs=EPOCHS,
-          # validation_data=(valid_inputs['X'], valid_inputs['target']),
+          validation_data=(X_valid, [y1_valid, y2_valid, y3_valid]),
           callbacks=[earlystop],
           verbose=1)
 
