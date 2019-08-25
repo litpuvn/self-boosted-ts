@@ -15,7 +15,7 @@ from kgp.losses import gen_gp_loss
 from kgp.utils.experiment import train
 
 
-def create_model():
+def create_model(nb_train_samples=512, batch_size=32):
 
     x = Input(shape=(6, 3), name="input_layer")
     conv = Conv1D(kernel_size=3, filters=5, activation='relu')(x)
@@ -41,8 +41,6 @@ def create_model():
     out2 = Dense(1, name="out2")(sub2)
     out3 = Dense(1, name="out3")(sub3)
     # Gaussian setting
-    batch_size = 32
-    nb_train_samples = 512
     gp_hypers = {'lik': -2.0, 'cov': [[-0.7], [0.0]]}
     gp = GP(gp_hypers, batch_size=batch_size, nb_train_samples=nb_train_samples)
 

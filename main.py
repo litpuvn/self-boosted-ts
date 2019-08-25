@@ -38,7 +38,7 @@ print("input_X shape", X_train.shape)
 BATCH_SIZE = 32
 EPOCHS = 10
 
-model = create_model()
+model = create_model(nb_train_samples=len(X_train), batch_size=32)
 earlystop = EarlyStopping(monitor='val_mse', patience=10)
 
 model.fit(X_train,
