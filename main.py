@@ -6,6 +6,7 @@ from common.utils import load_data, split_train_validation_test
 from ts_model import create_model
 from kgp.metrics import root_mean_squared_error as RMSE
 import matplotlib.pyplot as plt
+from keras.callbacks import ModelCheckpoint
 
 
 from sklearn.metrics import explained_variance_score
@@ -57,30 +58,27 @@ if __name__ == '__main__':
 
     # LATENT_DIM = 5
     BATCH_SIZE = 32
-    EPOCHS = 10
+    EPOCHS = 30
 
     model = create_model(horizon=HORIZON, nb_train_samples=len(X_train), batch_size=32)
     earlystop = EarlyStopping(monitor='val_mse', patience=5)
+
+    file_path = 'output/model_checkpoint/weights-improvement-{epoch:02d}-{val_loss:.2f}.hdf5'
+    check_point = ModelCheckpoint(file_path, monitor='val_loss', verbose=0, save_best_only=True,
+                                  save_weights_only=True, mode='auto', period=1)
 
     history = model.fit(X_train,
                         y_train,
               batch_size=BATCH_SIZE,
               epochs=EPOCHS,
               validation_data=(X_valid, y_valid),
-              callbacks=[earlystop],
+              callbacks=[earlystop, check_point],
               verbose=1)
 
     store_training_loss(history=history, filepath="output/training_loss_epochs_" + str(EPOCHS) + ".csv")
 
-    # plot_df = pd.DataFrame.from_dict({'train_loss': history.history['loss'], 'val_loss': history.history['val_loss']})
-    # plot_df.plot(logy=True, figsize=(10, 10), fontsize=12)
-    # plt.xlabel('epoch', fontsize=12)
-    # plt.ylabel('loss', fontsize=12)
-    # plt.show()
-
-
     # Finetune the model
-    # model.finetune(X_train, y_train, batch_size=BATCH_SIZE, gp_n_iter=1, verbose=1)
+    model.finetune(X_train, y_train, batch_size=BATCH_SIZE, gp_n_iter=10, verbose=1)
 
     # Test the model
     X_test = test_inputs['X']
