@@ -17,9 +17,9 @@ from kgp.utils.experiment import train
 from keras.models import Model as KerasModel
 
 
-def create_model(horizon=1, nb_train_samples=512, batch_size=32):
+def create_model(horizon=1, nb_train_samples=512, batch_size=32, feature_count=11):
 
-    x = Input(shape=(6, 11), name="input_layer")
+    x = Input(shape=(6, feature_count), name="input_layer")
     conv = Conv1D(kernel_size=3, filters=5, activation='relu')(x)
     mp = MaxPooling1D(pool_size=2)(conv)
     # conv2 = Conv1D(filters=5, kernel_size=3, activation='relu')(mp)
