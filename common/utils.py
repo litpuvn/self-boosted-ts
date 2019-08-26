@@ -9,6 +9,7 @@ import datetime as dt
 from sklearn.preprocessing.data import MinMaxScaler
 
 from common.TimeseriesTensor import TimeSeriesTensor
+from sklearn.utils import check_array
 
 
 def load_data(data_dir):
@@ -40,8 +41,22 @@ def load_data(data_dir):
     return df
 
 
+def load_data_one_source(data_dir):
+    """Load the GEFCom 2014 energy load data"""
+
+    target = pd.read_csv(os.path.join(data_dir, 'hourly-norm-data-2011.csv'), header=0, parse_dates={"timestamp": [0]})
+    target = target.drop('timestamp', axis=1)
+
+
+    dt_idx = DatetimeIndex(freq='H', start='2011-01-01 00:00:00', end='2011-12-31 23:00:00')
+    target.columns = ["load"]
+
+    target.index = dt_idx
+
+    return target
+
 def split_train_validation_test(multi_time_series_df, valid_start_time, test_start_time, features,
-                                time_step_lag=1, horizon=1):
+                                time_step_lag=1, horizon=1, target='target'):
 
     if not isinstance(features, list) or len(features) < 1:
         raise Exception("Bad input for features. It must be an array of dataframe colummns used")
@@ -51,27 +66,27 @@ def split_train_validation_test(multi_time_series_df, valid_start_time, test_sta
     y_scaler = MinMaxScaler()
     y_scaler.fit(train[['load']])
 
-    train[['load', 'imf1', 'imf2']] = X_scaler.fit_transform(train)
+    train[features] = X_scaler.fit_transform(train)
 
-    tensor_structure = {'X': (range(-time_step_lag + 1, 1), ['load', 'imf1', 'imf2'])}
-    train_inputs = TimeSeriesTensor(train, target=['load', 'imf1', 'imf2'], H=horizon, tensor_structure=tensor_structure)
+    tensor_structure = {'X': (range(-time_step_lag + 1, 1), features)}
+    train_inputs = TimeSeriesTensor(train, target=target, H=horizon, tensor_structure=tensor_structure)
 
     print(train_inputs.dataframe.head())
 
 
     look_back_dt = dt.datetime.strptime(valid_start_time, '%Y-%m-%d %H:%M:%S') - dt.timedelta(hours=time_step_lag - 1)
     valid = multi_time_series_df.copy()[(multi_time_series_df.index >= look_back_dt) & (multi_time_series_df.index < test_start_time)]
-    valid[['load', 'imf1', 'imf2']] = X_scaler.transform(valid)
-    tensor_structure = {'X': (range(-time_step_lag + 1, 1), ['load', 'imf1', 'imf2'])}
-    valid_inputs = TimeSeriesTensor(valid, target=['load', 'imf1', 'imf2'], H=horizon, tensor_structure=tensor_structure)
+    valid[features] = X_scaler.transform(valid)
+    tensor_structure = {'X': (range(-time_step_lag + 1, 1), features)}
+    valid_inputs = TimeSeriesTensor(valid, target=target, H=horizon, tensor_structure=tensor_structure)
 
     print(valid_inputs.dataframe.head())
 
     # test set
     # look_back_dt = dt.datetime.strptime(test_start_time, '%Y-%m-%d %H:%M:%S') - dt.timedelta(hours=time_step_lag - 1)
     test = multi_time_series_df.copy()[test_start_time:]
-    test[['load', 'imf1', 'imf2']] = X_scaler.transform(test)
-    test_inputs = TimeSeriesTensor(test, target=['load', 'imf1', 'imf2'], H=horizon, tensor_structure=tensor_structure)
+    test[features] = X_scaler.transform(test)
+    test_inputs = TimeSeriesTensor(test, target=target, H=horizon, tensor_structure=tensor_structure)
 
     print("time lag:", time_step_lag, "original_feature:", len(features))
 
@@ -79,6 +94,9 @@ def split_train_validation_test(multi_time_series_df, valid_start_time, test_sta
 
 
 def mape(predictions, actuals):
+    predictions = check_array(predictions)
+    actuals = check_array(actuals)
+
     """Mean absolute percentage error"""
     return ((predictions - actuals).abs() / actuals).mean()
 
