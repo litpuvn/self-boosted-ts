@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     LATENT_DIM = 5
     BATCH_SIZE = 32
-    EPOCHS = 100
+    EPOCHS = 10
 
     model = Sequential()
     model.add(GRU(LATENT_DIM, input_shape=(time_step_lag, 1)))

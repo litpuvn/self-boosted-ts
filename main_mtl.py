@@ -2,8 +2,8 @@ from keras.callbacks import EarlyStopping
 import pandas as pd
 from common.TimeseriesTensor import TimeSeriesTensor
 from common.gp_log import store_training_loss, store_predict_points, flatten_test_predict
-from common.utils import load_data, split_train_validation_test
-from ts_model import create_model
+from common.utils import load_data, split_train_validation_test, load_data_full
+from ts_model import create_model, create_model_mtl
 from kgp.metrics import root_mean_squared_error as RMSE
 import matplotlib.pyplot as plt
 from keras.callbacks import ModelCheckpoint
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     HORIZON = 1
 
     data_dir = 'data/'
-    multi_time_series = load_data(data_dir)
+    multi_time_series = load_data_full(data_dir)
     print(multi_time_series.head())
 
 
@@ -30,6 +30,7 @@ if __name__ == '__main__':
     test_start_dt = '2011-11-01 00:00:00'
 
     features = ["load", "imf0", "imf1", "imf2", "imf3", "imf4", "imf5", "imf6", "imf7", "imf8", "imf9"]
+    # features = ["load", "imf1", "imf2"]
 
     train_inputs, valid_inputs, test_inputs, y_scaler = split_train_validation_test(multi_time_series,
                                                      valid_start_time=valid_start_dt,
@@ -61,9 +62,9 @@ if __name__ == '__main__':
 
     # LATENT_DIM = 5
     BATCH_SIZE = 32
-    EPOCHS = 10
+    EPOCHS = 100
 
-    model = create_model(horizon=HORIZON, nb_train_samples=len(X_train), batch_size=32)
+    model = create_model_mtl(horizon=HORIZON, nb_train_samples=len(X_train), batch_size=32)
     earlystop = EarlyStopping(monitor='val_mse', patience=5)
 
     file_path = 'output/model_checkpoint/weights-improvement-{epoch:02d}.hdf5'
@@ -81,7 +82,7 @@ if __name__ == '__main__':
     store_training_loss(history=history, filepath="output/training_loss_epochs_" + str(EPOCHS) + ".csv")
 
     # Finetune the model
-    model.finetune(X_train, y_train, batch_size=BATCH_SIZE, gp_n_iter=10, verbose=1)
+    # model.finetune(X_train, y_train, batch_size=BATCH_SIZE, gp_n_iter=10, verbose=1)
 
     # Test the model
     X_test = test_inputs['X']
