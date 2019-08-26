@@ -38,9 +38,6 @@ def flatten_test_predict(y_tests, y_predicts):
     y_tests = y_tests.ravel()
     y_predicts = y_predicts.ravel()
 
-    y_tests = y_tests.ravel()
-    y_predicts = y_predicts.ravel()
-
     return y_tests, y_predicts
 
 
