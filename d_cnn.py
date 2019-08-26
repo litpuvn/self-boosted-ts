@@ -63,6 +63,8 @@ if __name__ == '__main__':
     EPOCHS = 100
 
     model = Sequential()
+    # conv = Conv1D(kernel_size=3, filters=5, activation='relu')(x)
+
     model.add(
         Conv1D(LATENT_DIM, kernel_size=KERNEL_SIZE, padding='causal', strides=1, activation='relu', dilation_rate=1,
                input_shape=(time_step_lag, 1)))
