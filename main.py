@@ -58,13 +58,13 @@ if __name__ == '__main__':
 
     # LATENT_DIM = 5
     BATCH_SIZE = 32
-    EPOCHS = 30
+    EPOCHS = 10
 
     model = create_model(horizon=HORIZON, nb_train_samples=len(X_train), batch_size=32)
     earlystop = EarlyStopping(monitor='val_mse', patience=5)
 
-    file_path = 'output/model_checkpoint/weights-improvement-{epoch:02d}-{val_loss:.2f}.hdf5'
-    check_point = ModelCheckpoint(file_path, monitor='val_loss', verbose=0, save_best_only=True,
+    file_path = 'output/model_checkpoint/weights-improvement-{epoch:02d}.hdf5'
+    check_point = ModelCheckpoint(file_path, monitor='val_loss', verbose=0, save_best_only=False,
                                   save_weights_only=True, mode='auto', period=1)
 
     history = model.fit(X_train,
