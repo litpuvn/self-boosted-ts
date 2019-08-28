@@ -3,7 +3,7 @@ import pandas as pd
 from common.TimeseriesTensor import TimeSeriesTensor
 from common.gp_log import store_training_loss, store_predict_points, flatten_test_predict
 from common.utils import load_data, split_train_validation_test, load_data_full
-from ts_model import create_model, create_model_mtl
+from ts_model import create_model, create_model_mtl, create_model_mtl_mtv
 from kgp.metrics import root_mean_squared_error as RMSE
 import matplotlib.pyplot as plt
 from keras.callbacks import ModelCheckpoint
@@ -29,8 +29,8 @@ if __name__ == '__main__':
     valid_start_dt = '2011-09-01 00:00:00'
     test_start_dt = '2011-11-01 00:00:00'
 
-    features = ["load", "imf0", "imf1", "imf2", "imf3", "imf4", "imf5", "imf6", "imf7", "imf8", "imf9"]
-    # features = ["load", "imf1", "imf2"]
+    # features = ["load", "imf0", "imf1", "imf2", "imf3", "imf4", "imf5", "imf6", "imf7", "imf8", "imf9"]
+    features = ["load", "imf1", "imf2"]
 
     train_inputs, valid_inputs, test_inputs, y_scaler = split_train_validation_test(multi_time_series,
                                                      valid_start_time=valid_start_dt,
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     BATCH_SIZE = 32
     EPOCHS = 100
 
-    model = create_model_mtl(horizon=HORIZON, nb_train_samples=len(X_train), batch_size=32)
+    model = create_model_mtl_mtv(horizon=HORIZON, nb_train_samples=len(X_train), batch_size=32)
     earlystop = EarlyStopping(monitor='val_mse', patience=5)
 
     file_path = 'output/model_checkpoint/weights-improvement-{epoch:02d}.hdf5'

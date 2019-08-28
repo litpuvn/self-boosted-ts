@@ -40,6 +40,7 @@ def load_data(data_dir):
     # energy = energy.drop('timestamp', axis=1)
     # df = pd.concat([target, imf0, imf1, imf2, imf3, imf4, imf5, imf6, imf7, imf8, imf9], axis=1)
     df = pd.concat([target, imf1, imf2], axis=1)
+    # df = pd.concat([target, imf1, imf2, imf8, imf9], axis=1)
     # df.columns = ["load", "imf0", "imf1", "imf2", "imf3", "imf4", "imf5", "imf6", "imf7", "imf8", "imf9"]
     df.columns = ["load", "imf1", "imf2"]
 
