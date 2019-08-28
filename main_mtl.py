@@ -41,6 +41,16 @@ if __name__ == '__main__':
                                                      target=["load", "imf1", "imf2"]
                                                      )
 
+    aux_features = ["load", "imf0", "imf3", "imf4", "imf5", "imf6", "imf7", "imf8", "imf9"]
+    aux_inputs, aux_valid_inputs, aux_test_inputs, aux_y_scaler = split_train_validation_test(multi_time_series,
+                                                     valid_start_time=valid_start_dt,
+                                                     test_start_time=test_start_dt,
+                                                     time_step_lag=time_step_lag,
+                                                     horizon=HORIZON,
+                                                     features=aux_features,
+                                                     target=["load"]
+                                                     )
+
     X_train = train_inputs['X']
     y1_train = train_inputs['target_load']
     y2_train = train_inputs['target_imf1']
@@ -53,9 +63,14 @@ if __name__ == '__main__':
     y3_valid = valid_inputs['target_imf2']
     y_valid = [y1_valid, y2_valid, y3_valid]
 
+    aux_train = aux_inputs['X']
+    aux_valid = aux_valid_inputs['X']
+    aux_test = aux_test_inputs['X']
+
     # input_x = train_inputs['X']
     print("train_X shape", X_train.shape)
     print("valid_X shape", X_valid.shape)
+    print("aux_train shape", aux_train.shape)
     # print("target shape", y_train.shape)
     # print("training size:", len(train_inputs['X']), 'validation', len(valid_inputs['X']), 'test size:', len(test_inputs['X']) )
     # print("sum sizes", len(train_inputs['X']) + len(valid_inputs['X']) + len(test_inputs['X']))
@@ -64,18 +79,19 @@ if __name__ == '__main__':
     BATCH_SIZE = 32
     EPOCHS = 100
 
-    model = create_model_mtl_mtv(horizon=HORIZON, nb_train_samples=len(X_train), batch_size=32)
+    model = create_model_mtl_mtv(horizon=HORIZON, nb_train_samples=len(X_train),
+                                 batch_size=32, feature_count=len(features))
     earlystop = EarlyStopping(monitor='val_mse', patience=5)
 
     file_path = 'output/model_checkpoint/weights-improvement-{epoch:02d}.hdf5'
     check_point = ModelCheckpoint(file_path, monitor='val_loss', verbose=0, save_best_only=False,
                                   save_weights_only=True, mode='auto', period=1)
 
-    history = model.fit(X_train,
+    history = model.fit([X_train, aux_train],
                         y_train,
               batch_size=BATCH_SIZE,
               epochs=EPOCHS,
-              validation_data=(X_valid, y_valid),
+              validation_data=([X_valid, aux_valid], y_valid),
               callbacks=[earlystop, check_point],
               verbose=1)
 
@@ -90,7 +106,7 @@ if __name__ == '__main__':
     y2_test = test_inputs['target_imf1']
     y3_test = test_inputs['target_imf2']
 
-    y1_preds, y2_preds, y3_preds = model.predict(X_test)
+    y1_preds, y2_preds, y3_preds = model.predict([X_test, aux_test])
 
     y1_test = y_scaler.inverse_transform(y1_test)
     y1_preds = y_scaler.inverse_transform(y1_preds)
