@@ -11,8 +11,8 @@ from scipy.stats import pearsonr
 
 if __name__ == "__main__":
 
-    filepath = 'data/hourly-norm-data-2011.csv'
-    time_series_values = np.loadtxt(filepath, delimiter=',', usecols=1, skiprows=1)
+    filepath = 'data/exchange_rate.txt'
+    time_series_values = np.loadtxt(filepath, delimiter=',', usecols=0, skiprows=0)
 
     time_values = np.linspace(0, 1, len(time_series_values))
 
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         corr_data.append(corr)
         print("imf", n, '-euclidean distance to original series:', distance, "; corr:", corr, ";p-value:", pval)
 
-        np.savetxt("data/eimf/norm-2011-eIMF-" + str(n) + ".csv", eIMFs[n], delimiter=",")
+        # np.savetxt("data/eimf/norm-2011-eIMF-" + str(n) + ".csv", eIMFs[n], delimiter=",")
 
     # plt.subplot(nIMFs+2, 1, nIMFs+2)
     # plt.plot(t, reconstructed_points, 'r')
@@ -56,15 +56,15 @@ if __name__ == "__main__":
     # # plt.savefig('output/eemd_example', dpi=120)
     plt.show()
 
-    from sklearn.cluster import KMeans
-    import numpy as np
-
-    ## reshape for data with single feature
-    x = np.array(corr_data).reshape(-1, 1)
-    ## clustering
-    km = KMeans(n_clusters=2, init='random', max_iter=100, n_init=1)
-    km.fit(x)
-
-    labels = km.predict(x)
-    print("labels:", labels)
+    # from sklearn.cluster import KMeans
+    # import numpy as np
+    #
+    # ## reshape for data with single feature
+    # x = np.array(corr_data).reshape(-1, 1)
+    # ## clustering
+    # km = KMeans(n_clusters=2, init='random', max_iter=100, n_init=1)
+    # km.fit(x)
+    #
+    # labels = km.predict(x)
+    # print("labels:", labels)
     # in row_dict we store actual meanings of rows, in my case it's russian words
