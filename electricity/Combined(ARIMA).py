@@ -7,7 +7,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pylab as plt
-get_ipython().magic(u'matplotlib inline')
+
 from matplotlib.pylab import rcParams
 rcParams['figure.figsize'] = 15, 6
 
@@ -15,7 +15,8 @@ rcParams['figure.figsize'] = 15, 6
 # In[2]:
 
 
-data = pd.read_csv('data-2011.csv', parse_dates=['time'])
+data = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/exchange_rate.txt')
+print(data.count)
 data.index = data['time']
 data = data.reindex(pd.date_range(min(data['time']), max(data['time']), freq='H'))
 data = data.drop('time', axis=1)
@@ -55,13 +56,13 @@ def test_stationarity(timeseries):
     plt.title('Rolling Mean & Standard Deviation')
     plt.show(block=False)
         #Perform Dickey-Fuller test:
-    print ('Results of Dickey-Fuller Test:')
+    print('Results of Dickey-Fuller Test:')
     dftest = adfuller(timeseries, autolag='AIC')
     dfoutput = pd.Series(dftest[0:4], index=['Test Statistic','p-value','#Lags Used','Number of Observations Used'])
 
     for key,value in dftest[4].items():
         dfoutput['Critical Value (%s)'%key] = value
-    print (dfoutput)
+    print(dfoutput)
 
 
 # In[7]:

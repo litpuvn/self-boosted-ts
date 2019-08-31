@@ -96,7 +96,7 @@ def load_data_one_source(data_dir):
 
 
 def split_train_validation_test(multi_time_series_df, valid_start_time, test_start_time, features,
-                                time_step_lag=1, horizon=1, target='target'):
+                                time_step_lag=1, horizon=1, target='target', time_format='%Y-%m-%d %H:%M:%S', freq='H'):
 
     if not isinstance(features, list) or len(features) < 1:
         raise Exception("Bad input for features. It must be an array of dataframe colummns used")
@@ -110,22 +110,25 @@ def split_train_validation_test(multi_time_series_df, valid_start_time, test_sta
         y_scaler = MinMaxScaler()
         y_scaler.fit(train[['load']])
     else:
-        y_scaler = None
+        y_scaler = MinMaxScaler()
+
+        tg = train[target]
+        y_scaler.fit(tg.values.reshape(-1, 1))
 
     train[features] = X_scaler.fit_transform(train)
 
     tensor_structure = {'X': (range(-time_step_lag + 1, 1), features)}
-    train_inputs = TimeSeriesTensor(train, target=target, H=horizon, tensor_structure=tensor_structure)
+    train_inputs = TimeSeriesTensor(train, target=target, H=horizon, freq=freq, tensor_structure=tensor_structure)
 
     print(train_inputs.dataframe.head())
 
 
-    look_back_dt = dt.datetime.strptime(valid_start_time, '%Y-%m-%d %H:%M:%S') - dt.timedelta(hours=time_step_lag - 1)
+    look_back_dt = dt.datetime.strptime(valid_start_time, time_format) - dt.timedelta(hours=time_step_lag - 1)
     valid = multi_time_series_df.copy()[(multi_time_series_df.index >= look_back_dt) & (multi_time_series_df.index < test_start_time)]
     valid = valid[features]
     valid[features] = X_scaler.transform(valid)
     tensor_structure = {'X': (range(-time_step_lag + 1, 1), features)}
-    valid_inputs = TimeSeriesTensor(valid, target=target, H=horizon, tensor_structure=tensor_structure)
+    valid_inputs = TimeSeriesTensor(valid, target=target, H=horizon, freq=freq, tensor_structure=tensor_structure)
 
     print(valid_inputs.dataframe.head())
 
@@ -134,7 +137,7 @@ def split_train_validation_test(multi_time_series_df, valid_start_time, test_sta
     test = multi_time_series_df.copy()[test_start_time:]
     test = test[features]
     test[features] = X_scaler.transform(test)
-    test_inputs = TimeSeriesTensor(test, target=target, H=horizon, tensor_structure=tensor_structure)
+    test_inputs = TimeSeriesTensor(test, target=target, H=horizon, freq=freq, tensor_structure=tensor_structure)
 
     print("time lag:", time_step_lag, "original_feature:", len(features))
 
