@@ -63,35 +63,31 @@ if __name__ == '__main__':
     X_valid = valid_inputs['X']
     y_valid = valid_inputs['target_avg_electricity']
 
+    # input_x = train_inputs['X']
     print("train_X shape", X_train.shape)
     print("valid_X shape", X_valid.shape)
+    # print("target shape", y_train.shape)
+    # print("training size:", len(train_inputs['X']), 'validation', len(valid_inputs['X']), 'test size:', len(test_inputs['X']) )
+    # print("sum sizes", len(train_inputs['X']) + len(valid_inputs['X']) + len(test_inputs['X']))
 
+    ## build CNN
     from keras.models import Model, Sequential
     from keras.layers import Conv1D, Dense, Flatten
     from keras.callbacks import EarlyStopping, ModelCheckpoint
 
     LATENT_DIM = 5
-    KERNEL_SIZE = 2
-
     BATCH_SIZE = 32
     EPOCHS = 100
 
     model = Sequential()
-    # conv = Conv1D(kernel_size=3, filters=5, activation='relu')(x)
-
-    model.add(
-        Conv1D(LATENT_DIM, kernel_size=KERNEL_SIZE, padding='causal', strides=1, activation='relu', dilation_rate=1,
-               input_shape=(time_step_lag, 1)))
-    model.add(
-        Conv1D(LATENT_DIM, kernel_size=KERNEL_SIZE, padding='causal', strides=1, activation='relu', dilation_rate=2))
-    model.add(
-        Conv1D(LATENT_DIM, kernel_size=KERNEL_SIZE, padding='causal', strides=1, activation='relu', dilation_rate=4))
+    model.add(GRU(LATENT_DIM, input_shape=(time_step_lag, 1)))
+    model.add(RepeatVector(HORIZON))
+    model.add(GRU(LATENT_DIM, return_sequences=True))
+    model.add(TimeDistributed(Dense(1)))
     model.add(Flatten())
-    model.add(Dense(HORIZON, activation='linear'))
 
+    model.compile(optimizer='RMSprop', loss='mse')
     model.summary()
-
-    model.compile(optimizer='Adam', loss='mse', metrics=['mae', 'mape', 'mse'])
 
     earlystop = EarlyStopping(monitor='val_mse', patience=5)
     history = model.fit(X_train,
@@ -117,10 +113,12 @@ if __name__ == '__main__':
     rmse_predict = RMSE(mse)
     evs = explained_variance_score(y1_test, y1_preds)
     mae = mean_absolute_error(y1_test, y1_preds)
-    msle = mean_squared_log_error(y1_test, y1_preds)
+    mse = mean_squared_error(y1_test, y1_preds)
+
     meae = median_absolute_error(y1_test, y1_preds)
     r_square = r2_score(y1_test, y1_preds)
-
     mape_v = mape(y1_preds.reshape(-1, 1), y1_test.reshape(-1, 1))
 
-    print("mse:", mse, 'rmse_predict:', rmse_predict, "mae:", mae, "mape:", mape_v, "r2:", r_square, "msle:", msle, "meae:", meae, "evs:", evs)
+    print("mse:", mse, 'rmse_predict:', rmse_predict, "mae:", mae, "mape:", mape_v, "r2:", r_square,
+          "meae:", meae, "evs:", evs)
+
