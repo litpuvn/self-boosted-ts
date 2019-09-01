@@ -149,7 +149,7 @@ def mape(predictions, actuals):
     actuals = check_array(actuals)
 
     """Mean absolute percentage error"""
-    return ((predictions - actuals).abs() / actuals).mean()
+    return ( np.mean(np.abs(predictions - actuals) / actuals))
 
 
 def create_evaluation_df(predictions, test_inputs, H, scaler):

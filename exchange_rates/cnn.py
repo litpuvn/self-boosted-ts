@@ -19,7 +19,7 @@ def RMSE(x):
 
 if __name__ == '__main__':
 
-    time_step_lag = 6
+    time_step_lag = 12
     HORIZON = 1
 
     target = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/exchange_rate.txt', header=0, usecols=[0])
@@ -112,5 +112,6 @@ if __name__ == '__main__':
     meae = median_absolute_error(y1_test, y1_preds)
     r_square = r2_score(y1_test, y1_preds)
 
-    print('rmse_predict:', rmse_predict, "evs:", evs, "mae:", mae,
-          "mse:", mse, "msle:", msle, "meae:", meae, "r2:", r_square)
+    mape_v = mape(y1_preds.reshape(-1, 1), y1_test.reshape(-1, 1))
+
+    print("mse:", mse, 'rmse_predict:', rmse_predict, "mae:", mae, "mape:", mape_v, "r2:", r_square, "msle:", msle, "meae:", meae, "evs:", evs)

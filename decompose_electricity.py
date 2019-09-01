@@ -1,8 +1,8 @@
 from PyEMD import EEMD
 from PyEMD import CEEMDAN
+
 # import matplotlib as plt
 import pylab as plt
-
 import numpy as np
 from fastdtw import fastdtw
 from scipy.spatial.distance import euclidean
@@ -12,7 +12,7 @@ from scipy.stats import pearsonr
 if __name__ == "__main__":
 
     filepath = 'data/exchange_rate.txt'
-    time_series_values = np.loadtxt(filepath, delimiter=',', usecols=0, skiprows=0)
+    time_series_values = np.loadtxt(filepath, delimiter=',', usecols=0, skiprows=1)
 
     time_values = np.linspace(0, 1, len(time_series_values))
 
