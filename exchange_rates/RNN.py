@@ -24,7 +24,7 @@ def RMSE(x):
     return sqrt(x)
 
 if __name__ == '__main__':
-    time_step_lag = 1
+    time_step_lag = 12
     HORIZON = 1
 
     target = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/exchange_rate.txt', header=0, usecols=[0])
