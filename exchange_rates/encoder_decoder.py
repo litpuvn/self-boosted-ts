@@ -24,7 +24,7 @@ def RMSE(x):
     return sqrt(x)
 
 if __name__ == '__main__':
-    time_step_lag = 12
+    time_step_lag = 1
     HORIZON = 1
 
     target = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/exchange_rate.txt', header=0, usecols=[0])
@@ -74,7 +74,7 @@ if __name__ == '__main__':
 
     LATENT_DIM = 5
     BATCH_SIZE = 32
-    EPOCHS = 10
+    EPOCHS = 100
 
     model = Sequential()
     model.add(GRU(LATENT_DIM, input_shape=(time_step_lag, 1)))
@@ -117,8 +117,7 @@ if __name__ == '__main__':
     r_square = r2_score(y1_test, y1_preds)
     mape_v = mape(y1_preds.reshape(-1, 1), y1_test.reshape(-1, 1))
 
-    print('rmse_predict:', rmse_predict, "evs:", evs, "mae:", mae,
-          "mse:", mse, "msle:", msle, "meae:", meae, "r2:", r_square)
+    print("mse:", mse, 'rmse_predict:', rmse_predict, "mae:", mae, "mape:", mape_v, "r2:", r_square, "msle:", msle, "meae:", meae, "evs:", evs)
 
     # c_mape = mape(y1_test, y1_preds)
     # print("mape:", c_mape)
