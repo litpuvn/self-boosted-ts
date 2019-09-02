@@ -8,4 +8,7 @@ __pycache__/
 octave-workspace
 learning-examples/output/
 solar-power/time_exchange_rage.csv
+electricity/metrics
+solar-power/solar-power.csv
+
 
