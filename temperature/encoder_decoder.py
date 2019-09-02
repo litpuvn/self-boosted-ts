@@ -9,10 +9,7 @@ from pandas import DatetimeIndex
 
 from common.TimeseriesTensor import TimeSeriesTensor
 from common.gp_log import store_training_loss, store_predict_points, flatten_test_predict
-from common.utils import load_data, split_train_validation_test, mape, load_data_one_source
-
-
-
+from common.utils import load_data, split_train_validation_test, mape, load_data_one_source, load_data_full
 
 from sklearn.metrics import explained_variance_score
 from sklearn.metrics import mean_absolute_error
@@ -50,19 +47,18 @@ def RMSE(x):
     return sqrt(x)
 
 if __name__ == '__main__':
-    time_step_lag = 1
+    time_step_lag = 6
     HORIZON = 1
 
 
+    imfs_count = 0  # set equal to zero for not considering IMFs features
 
-    data = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/temperature.csv', parse_dates=['Date_Time'])
-    data.index = data['Date_Time']
-    data = data.reindex(pd.date_range(min(data['Date_Time']), max(data['Date_Time']), freq='H'))
-    data = data.drop('Date_Time', axis=1)
+    data_dir = '/home/long/TTU-SOURCES/self-boosted-ts/data'
+    output_dir = '/home/long/TTU-SOURCES/self-boosted-ts/output/temperature'
 
-    data = data[['temperature']]
+    multi_time_series = load_data_full(data_dir, datasource='temperature', imfs_count=imfs_count)
+    print(multi_time_series.head())
 
-    multi_time_series = data
 
     valid_start_dt = '2004-10-30 14:00:00'
     test_start_dt = '2005-01-16 13:00:00'
@@ -72,15 +68,15 @@ if __name__ == '__main__':
                                                                                     test_start_time=test_start_dt,
                                                                                     time_step_lag=time_step_lag,
                                                                                     horizon=HORIZON,
-                                                                                    features=["temperature"],
-                                                                                    target='temperature'
+                                                                                    features=["load"],
+                                                                                    target='load'
                                                                                     )
 
     X_train = train_inputs['X']
-    y_train = train_inputs['target_temperature']
+    y_train = train_inputs['target_load']
 
     X_valid = valid_inputs['X']
-    y_valid = valid_inputs['target_temperature']
+    y_valid = valid_inputs['target_load']
 
     # input_x = train_inputs['X']
     print("train_X shape", X_train.shape)
@@ -119,7 +115,7 @@ if __name__ == '__main__':
 
     # Test the model
     X_test = test_inputs['X']
-    y1_test = test_inputs['target_temperature']
+    y1_test = test_inputs['target_load']
 
     y1_preds = model.predict(X_test)
 

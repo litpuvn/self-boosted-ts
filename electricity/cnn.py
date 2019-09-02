@@ -9,7 +9,7 @@ from pandas import DatetimeIndex
 
 from common.TimeseriesTensor import TimeSeriesTensor
 from common.gp_log import store_training_loss, store_predict_points, flatten_test_predict
-from common.utils import load_data, split_train_validation_test, mape, load_data_one_source
+from common.utils import load_data, split_train_validation_test, mape, load_data_one_source, load_data_full
 
 
 
@@ -26,20 +26,37 @@ def RMSE(x):
     return sqrt(x)
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     time_step_lag = 1
+=======
+    time_step_lag = 6
+>>>>>>> 46d6c7a0d5df77067cecc0ad54e9b2b5779cf1ef
     HORIZON = 1
 
+    imfs_count = 0 # set equal to zero for not considering IMFs features
 
+    data_dir = '/home/long/TTU-SOURCES/self-boosted-ts/data'
+    output_dir = '/home/long/TTU-SOURCES/self-boosted-ts/output/electricity'
 
+<<<<<<< HEAD
     data = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/hourly_clean_electricity.csv', parse_dates=['time'])
     data.index = data['time']
     data = data.reindex(pd.date_range(min(data['time']), max(data['time']), freq='H'))
     data = data.drop('time', axis=1)
+=======
+    multi_time_series = load_data_full(data_dir, datasource='electricity', imfs_count=imfs_count)
+    print(multi_time_series.head())
+>>>>>>> 46d6c7a0d5df77067cecc0ad54e9b2b5779cf1ef
 
-    data = data[['avg_electricity']]
-    print(data.head())
-
-    multi_time_series = data
+    # data = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/clean_electricity.csv', parse_dates=['time'])
+    # data.index = data['time']
+    # data = data.reindex(pd.date_range(min(data['time']), max(data['time']), freq='H'))
+    # data = data.drop('time', axis=1)
+    #
+    # data = data[['avg_electricity']]
+    # print(data.head())
+    #
+    # multi_time_series = data
 
     print("count data rows=", multi_time_series.count)
 
@@ -53,15 +70,15 @@ if __name__ == '__main__':
                                                                                     test_start_time=test_start_dt,
                                                                                     time_step_lag=time_step_lag,
                                                                                     horizon=HORIZON,
-                                                                                    features=["avg_electricity"],
-                                                                                    target='avg_electricity'
+                                                                                    features=["load"],
+                                                                                    target='load'
                                                                                     )
 
     X_train = train_inputs['X']
-    y_train = train_inputs['target_avg_electricity']
+    y_train = train_inputs['target_load']
 
     X_valid = valid_inputs['X']
-    y_valid = valid_inputs['target_avg_electricity']
+    y_valid = valid_inputs['target_load']
 
     print("train_X shape", X_train.shape)
     print("valid_X shape", X_valid.shape)
@@ -104,7 +121,7 @@ if __name__ == '__main__':
 
     # Test the model
     X_test = test_inputs['X']
-    y1_test = test_inputs['target_avg_electricity']
+    y1_test = test_inputs['target_load']
 
     y1_preds = model.predict(X_test)
 
