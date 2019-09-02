@@ -26,11 +26,10 @@ def RMSE(x):
     return sqrt(x)
 
 if __name__ == '__main__':
-<<<<<<< HEAD
-    time_step_lag = 1
-=======
+
+
     time_step_lag = 6
->>>>>>> 46d6c7a0d5df77067cecc0ad54e9b2b5779cf1ef
+
     HORIZON = 1
 
     imfs_count = 0 # set equal to zero for not considering IMFs features
@@ -38,15 +37,15 @@ if __name__ == '__main__':
     data_dir = '/home/long/TTU-SOURCES/self-boosted-ts/data'
     output_dir = '/home/long/TTU-SOURCES/self-boosted-ts/output/electricity'
 
-<<<<<<< HEAD
+
     data = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/hourly_clean_electricity.csv', parse_dates=['time'])
     data.index = data['time']
     data = data.reindex(pd.date_range(min(data['time']), max(data['time']), freq='H'))
     data = data.drop('time', axis=1)
-=======
+
     multi_time_series = load_data_full(data_dir, datasource='electricity', imfs_count=imfs_count)
     print(multi_time_series.head())
->>>>>>> 46d6c7a0d5df77067cecc0ad54e9b2b5779cf1ef
+
 
     # data = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/clean_electricity.csv', parse_dates=['time'])
     # data.index = data['time']
