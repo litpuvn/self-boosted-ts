@@ -51,7 +51,7 @@ def load_data(data_dir):
     return df
 
 
-def load_data_full(data_dir, datasource='electricity', imfs_count=13):
+def load_data_full(data_dir, datasource='electricity', imfs_count=13, freq='H'):
     """Load the GEFCom 2014 energy load data"""
     target =None
     start_date = None
@@ -64,6 +64,11 @@ def load_data_full(data_dir, datasource='electricity', imfs_count=13):
         target = target.drop('timestamp', axis=1)
     elif datasource == 'temperature':
         target = pd.read_csv(os.path.join(data_dir, 'temperature.csv'), header=0, parse_dates={"timestamp": [0]})
+        start_date = min(target['timestamp'])
+        end_date = max(target['timestamp'])
+        target = target.drop('timestamp', axis=1)
+    elif datasource == 'exchange-rate':
+        target = pd.read_csv(os.path.join(data_dir, 'time_exchange_rate.csv'), header=0, parse_dates={"timestamp": [0]})
         start_date = min(target['timestamp'])
         end_date = max(target['timestamp'])
         target = target.drop('timestamp', axis=1)
@@ -83,7 +88,7 @@ def load_data_full(data_dir, datasource='electricity', imfs_count=13):
     df.columns = ["load"] + imf_lables
 
     # dt_idx = DatetimeIndex(freq='H', start='2011-01-01 00:00:00', end='2011-12-31 23:00:00')
-    df.index = pd.date_range(start_date, end_date, freq='H')
+    df.index = pd.date_range(start_date, end_date, freq=freq)
 
     return df
 
