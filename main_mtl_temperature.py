@@ -3,7 +3,7 @@ import pandas as pd
 from common.TimeseriesTensor import TimeSeriesTensor
 from common.gp_log import store_training_loss, store_predict_points, flatten_test_predict
 from common.utils import load_data, split_train_validation_test, load_data_full, mape
-from ts_model import create_model, create_model_mtl, create_model_mtl_mtv
+from ts_model import create_model, create_model_mtl, create_model_mtl_mtv, create_model_mtl_mtv_temperature
 from kgp.metrics import root_mean_squared_error as RMSE
 import matplotlib.pyplot as plt
 from keras.callbacks import ModelCheckpoint
@@ -21,22 +21,19 @@ if __name__ == '__main__':
     time_step_lag = 6
     HORIZON = 1
 
-    imfs_count = 13
+    imfs_count = 12
 
     data_dir = 'data'
-    output_dir = 'output/electricity'
+    output_dir = 'output/temperature'
 
-    multi_time_series = load_data_full(data_dir, datasource='electricity', imfs_count=imfs_count)
+    multi_time_series = load_data_full(data_dir, datasource='temperature', imfs_count=imfs_count)
     print(multi_time_series.head())
 
-    #
-    # valid_start_dt = '2011-09-01 00:00:00'
-    # test_start_dt = '2011-11-01 00:00:00'
 
-    valid_start_dt = '2013-05-26 14:15:00'
-    test_start_dt = '2014-03-14 19:15:00'
-    # features = ["load", "imf0", "imf1", "imf2", "imf3", "imf4", "imf5", "imf6", "imf7", "imf8", "imf9"]
-    features = ["load", "imf2", "imf3"]
+    valid_start_dt = '2004-10-30 14:00:00'
+    test_start_dt = '2005-01-16 13:00:00'
+
+    features = ["load", "imf9", "imf10", "imf11"]
 
     train_inputs, valid_inputs, test_inputs, y_scaler = split_train_validation_test(multi_time_series,
                                                      valid_start_time=valid_start_dt,
@@ -63,15 +60,17 @@ if __name__ == '__main__':
 
     X_train = train_inputs['X']
     y1_train = train_inputs['target_load']
-    y2_train = train_inputs['target_imf2']
-    y3_train = train_inputs['target_imf3']
-    y_train = [y1_train, y2_train, y3_train]
+    y2_train = train_inputs['target_imf9']
+    y3_train = train_inputs['target_imf10']
+    y4_train = train_inputs['target_imf11']
+    y_train = [y1_train, y2_train, y3_train, y4_train]
 
     X_valid = valid_inputs['X']
     y1_valid = valid_inputs['target_load']
-    y2_valid = valid_inputs['target_imf2']
-    y3_valid = valid_inputs['target_imf3']
-    y_valid = [y1_valid, y2_valid, y3_valid]
+    y2_valid = valid_inputs['target_imf9']
+    y3_valid = valid_inputs['target_imf10']
+    y4_valid = valid_inputs['target_imf11']
+    y_valid = [y1_valid, y2_valid, y3_valid, y4_valid]
 
     aux_train = aux_inputs['X']
     aux_valid = aux_valid_inputs['X']
@@ -89,7 +88,7 @@ if __name__ == '__main__':
     BATCH_SIZE = 32
     EPOCHS = 100
 
-    model = create_model_mtl_mtv(horizon=HORIZON, nb_train_samples=len(X_train),
+    model = create_model_mtl_mtv_temperature(horizon=HORIZON, nb_train_samples=len(X_train),
                                  batch_size=32, feature_count=len(features))
     earlystop = EarlyStopping(monitor='val_mse', patience=5)
 
@@ -105,7 +104,8 @@ if __name__ == '__main__':
               callbacks=[earlystop, check_point],
               verbose=1)
 
-    store_training_loss(history=history, filepath=output_dir + "/training_loss_epochs_" + str(EPOCHS) + ".csv")
+    store_training_loss(history=history, filepath=output_dir + "/training_loss_epochs_" + str(EPOCHS) + "_lag" +
+                                                  str(time_step_lag) + ".csv")
 
     # Finetune the model
     # model.finetune(X_train, y_train, batch_size=BATCH_SIZE, gp_n_iter=10, verbose=1)
@@ -113,10 +113,11 @@ if __name__ == '__main__':
     # Test the model
     X_test = test_inputs['X']
     y1_test = test_inputs['target_load']
-    y2_test = test_inputs['target_imf2']
-    y3_test = test_inputs['target_imf3']
+    y2_test = test_inputs['target_imf9']
+    y3_test = test_inputs['target_imf10']
+    y4_test = test_inputs['target_imf11']
 
-    y1_preds, y2_preds, y3_preds = model.predict([X_test, aux_test])
+    y1_preds, y2_preds, y3_preds, y4_preds = model.predict([X_test, aux_test])
 
     y1_test = y_scaler.inverse_transform(y1_test)
     y1_preds = y_scaler.inverse_transform(y1_preds)
@@ -136,4 +137,5 @@ if __name__ == '__main__':
     print('rmse_predict:', rmse_predict, "evs:", evs, "mae:", mae,
           "mse:", mse, "msle:", msle, "meae:", meae, "r2:", r_square, "mape", mape_v)
 
-    store_predict_points(y1_test, y1_preds, output_dir + '/test_mtl_prediction_epochs_' + str(EPOCHS) + '.csv')
+    store_predict_points(y1_test, y1_preds, output_dir + '/test_mtl_prediction_epochs_' + str(EPOCHS) + '_lag_'
+                         + str(time_step_lag) + '.csv')
