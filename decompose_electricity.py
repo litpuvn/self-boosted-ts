@@ -11,8 +11,8 @@ from scipy.stats import pearsonr
 
 if __name__ == "__main__":
 
-    filepath = 'data/hourly_clean_electricity.csv'
-    folder = 'data/electricity'
+    filepath = 'data/time_exchange_rate.csv'
+    folder = 'data/exchange-rate'
 
     # time_series_values = np.loadtxt(filepath, delimiter=',', usecols=1, skiprows=1, converters = {1: to_float})
     time_series_values = np.loadtxt(filepath, delimiter=',', usecols=1, skiprows=1)
