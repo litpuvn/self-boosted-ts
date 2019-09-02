@@ -18,7 +18,7 @@ def RMSE(x):
     return sqrt(x)
 
 if __name__ == '__main__':
-    time_step_lag = 3
+    time_step_lag = 1
     HORIZON = 1
 
 
