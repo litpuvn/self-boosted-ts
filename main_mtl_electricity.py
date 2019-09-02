@@ -3,7 +3,7 @@ import pandas as pd
 from common.TimeseriesTensor import TimeSeriesTensor
 from common.gp_log import store_training_loss, store_predict_points, flatten_test_predict
 from common.utils import load_data, split_train_validation_test, load_data_full, mape
-from ts_model import create_model, create_model_mtl, create_model_mtl_mtv
+from ts_model import create_model, create_model_mtl, create_model_mtl_mtv_electricity
 from kgp.metrics import root_mean_squared_error as RMSE
 import matplotlib.pyplot as plt
 from keras.callbacks import ModelCheckpoint
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     BATCH_SIZE = 32
     EPOCHS = 100
 
-    model = create_model_mtl_mtv(horizon=HORIZON, nb_train_samples=len(X_train),
+    model = create_model_mtl_mtv_electricity(horizon=HORIZON, nb_train_samples=len(X_train),
                                  batch_size=32, feature_count=len(features))
     earlystop = EarlyStopping(monitor='val_mse', patience=5)
 

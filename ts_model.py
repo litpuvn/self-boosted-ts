@@ -116,7 +116,7 @@ def create_model_mtl(horizon=1, nb_train_samples=512, batch_size=32):
 
     return model
 
-def create_model_mtl_mtv(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=11, datasource='electricity'):
+def create_model_mtl_mtv_electricity(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=11):
 
     x = Input(shape=(6, feature_count), name="input_layer")
     conv = Conv1D(kernel_size=3, filters=5, activation='relu')(x)
@@ -132,25 +132,14 @@ def create_model_mtl_mtv(horizon=1, nb_train_samples=512, batch_size=32,  featur
 
     shared_dense = Dense(64, name="shared_layer")(lstm2)
 
-    if datasource == 'electricity':
+    ## sub1 is main task; units = reshape dimension multiplication
+    sub1 = GRU(units=72, name="task1")(shared_dense)
+    sub2 = GRU(units=16, name="task2")(shared_dense)
+    sub3 = GRU(units=16, name="task3")(shared_dense)
 
-        ## sub1 is main task; units = reshape dimension multiplication
-        sub1 = GRU(units=72, name="task1")(shared_dense)
-        sub2 = GRU(units=16, name="task2")(shared_dense)
-        sub3 = GRU(units=16, name="task3")(shared_dense)
+    sub1 = Reshape((6, 12))(sub1)
+    auxiliary_input = Input(shape=(6, 12), name='aux_input')
 
-        sub1 = Reshape((6, 12))(sub1)
-        auxiliary_input = Input(shape=(6, 12), name='aux_input')
-    elif datasource == 'temperature':
-        ## sub1 is main task; units = reshape dimension multiplication
-        sub1 = GRU(units=60, name="task1")(shared_dense)
-        sub2 = GRU(units=16, name="task2")(shared_dense)
-        sub3 = GRU(units=16, name="task3")(shared_dense)
-
-        sub1 = Reshape((6, 10))(sub1)
-        auxiliary_input = Input(shape=(6, 10), name='aux_input')
-    else:
-        raise Exception('not support the data source', datasource)
     concate = Concatenate(axis=-1)([sub1, auxiliary_input])
     # out1_gp = Dense(1, name="out1_gp")(sub1)
     out1 = Dense(8, name="spec_out1")(concate)
