@@ -26,12 +26,12 @@ def RMSE(x):
     return sqrt(x)
 
 if __name__ == '__main__':
-    time_step_lag = 12
+    time_step_lag = 1
     HORIZON = 1
 
 
 
-    data = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/clean_electricity.csv', parse_dates=['time'])
+    data = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/hourly_clean_electricity.csv', parse_dates=['time'])
     data.index = data['time']
     data = data.reindex(pd.date_range(min(data['time']), max(data['time']), freq='H'))
     data = data.drop('time', axis=1)
@@ -45,8 +45,8 @@ if __name__ == '__main__':
 
     print(multi_time_series.iloc[28051, :])
 
-    valid_start_dt = '2013-05-26 14:15:00'
-    test_start_dt = '2014-03-14 19:15:00'
+    valid_start_dt = '2013-05-26 14:00:00'
+    test_start_dt = '2014-03-14 19:00:00'
 
     train_inputs, valid_inputs, test_inputs, y_scaler = split_train_validation_test(multi_time_series,
                                                                                     valid_start_time=valid_start_dt,
