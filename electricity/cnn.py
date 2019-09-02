@@ -34,14 +34,11 @@ if __name__ == '__main__':
 
     imfs_count = 0 # set equal to zero for not considering IMFs features
 
-    data_dir = '/home/long/TTU-SOURCES/self-boosted-ts/data'
-    output_dir = '/home/long/TTU-SOURCES/self-boosted-ts/output/electricity'
+    data_dir = '/home/ope/Documents/Projects/self-boosted-ts/data/'
+    output_dir = '/home/ope/Documents/Projects/self-boosted-ts/output/electricity'
 
 
-    data = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/hourly_clean_electricity.csv', parse_dates=['time'])
-    data.index = data['time']
-    data = data.reindex(pd.date_range(min(data['time']), max(data['time']), freq='H'))
-    data = data.drop('time', axis=1)
+
 
     multi_time_series = load_data_full(data_dir, datasource='electricity', imfs_count=imfs_count)
     print(multi_time_series.head())
