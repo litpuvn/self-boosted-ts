@@ -51,33 +51,38 @@ def load_data(data_dir):
     return df
 
 
-def load_data_full(data_dir):
+def load_data_full(data_dir, datasource='electricity', imfs_count=13):
     """Load the GEFCom 2014 energy load data"""
+    target =None
+    start_date = None
+    end_date = None
 
-    target = pd.read_csv(os.path.join(data_dir, 'hourly-norm-data-2011.csv'), header=0, parse_dates={"timestamp": [0]})
-    target = target.drop('timestamp', axis=1)
+    if datasource == 'electricity':
+        target = pd.read_csv(os.path.join(data_dir, 'hourly_clean_electricity.csv'), header=0, parse_dates={"timestamp": [0]})
+        start_date = min(target['timestamp'])
+        end_date = max(target['timestamp'])
+        target = target.drop('timestamp', axis=1)
 
-    imf0 = pd.read_csv(os.path.join(data_dir, 'eimf/norm-2011-eIMF-0.csv'), header=None)
-    imf1 = pd.read_csv(os.path.join(data_dir, 'eimf/norm-2011-eIMF-1.csv'), header=None)
-    imf2 = pd.read_csv(os.path.join(data_dir, 'eimf/norm-2011-eIMF-2.csv'), header=None)
-    imf3 = pd.read_csv(os.path.join(data_dir, 'eimf/norm-2011-eIMF-3.csv'), header=None)
-    imf4 = pd.read_csv(os.path.join(data_dir, 'eimf/norm-2011-eIMF-4.csv'), header=None)
-    imf5 = pd.read_csv(os.path.join(data_dir, 'eimf/norm-2011-eIMF-5.csv'), header=None)
-    imf6 = pd.read_csv(os.path.join(data_dir, 'eimf/norm-2011-eIMF-6.csv'), header=None)
-    imf7 = pd.read_csv(os.path.join(data_dir, 'eimf/norm-2011-eIMF-7.csv'), header=None)
-    imf8 = pd.read_csv(os.path.join(data_dir, 'eimf/norm-2011-eIMF-8.csv'), header=None)
-    imf9 = pd.read_csv(os.path.join(data_dir, 'eimf/norm-2011-eIMF-9.csv'), header=None)
 
-    df = pd.concat([target, imf0, imf1, imf2, imf3, imf4, imf5, imf6, imf7, imf8, imf9], axis=1)
-    # df = pd.concat([target, imf1, imf2], axis=1)
-    df.columns = ["load", "imf0", "imf1", "imf2", "imf3", "imf4", "imf5", "imf6", "imf7", "imf8", "imf9"]
-    # df.columns = ["load", "imf1", "imf2"]
+    imfs =[]
+    imf_lables = []
+    imfs_dir = data_dir + '/' + datasource
+    for i in range(imfs_count):
+        file_path = imfs_dir + '/imfs/IMF-' + str(i) + '.csv'
+        imf_i = pd.read_csv(file_path, header=None, dtype=np.float64)
+        imfs.append(imf_i)
+        imf_lables.append("imf" + str(i))
 
-    dt_idx = DatetimeIndex(freq='H', start='2011-01-01 00:00:00', end='2011-12-31 23:00:00')
+    df = pd.concat([target] + imfs, axis=1)
 
-    df.index = dt_idx
+    df.columns = ["load"] + imf_lables
+
+    # dt_idx = DatetimeIndex(freq='H', start='2011-01-01 00:00:00', end='2011-12-31 23:00:00')
+    df.index = pd.date_range(start_date, end_date, freq='H')
 
     return df
+
+
 
 
 def load_data_one_source(data_dir):
