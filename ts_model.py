@@ -361,6 +361,30 @@ def create_model_mtl_only_exchange_rate(horizon=1, nb_train_samples=512, batch_s
     return model
 
 
+
+def create_model_mtv_exchange_rate(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=6):
+
+
+    x = Input(shape=(6, 8), name='aux_input')
+
+
+    out1 = Dense(8, name="spec_out1")(x)
+    out1 = Flatten()(out1)
+    out1 = Dense(1, name="out1")(out1)
+
+    outputs = out1
+
+    model = KerasModel(inputs=x, outputs=outputs)
+
+    model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'mse'])
+    # Callbacks
+    # callbacks = [EarlyStopping(monitor='val_mse', patience=10)]
+
+    model.summary()
+
+    return model
+
+
 def create_model_mtl_mtv_exchange_rate(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=6):
 
     x = Input(shape=(6, feature_count), name="input_layer")
