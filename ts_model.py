@@ -79,7 +79,7 @@ def create_model_mtl_only_electricity(horizon=1, nb_train_samples=512, batch_siz
     conv2 = Conv1D(5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(conv)
     conv3 = Conv1D(5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv2)
 
-    mp = MaxPooling1D(pool_size=2)(conv3)
+    mp = MaxPooling1D(pool_size=1)(conv3)
 
     lstm1 = GRU(16, return_sequences=True)(mp)
     lstm2 = GRU(32, return_sequences=True)(lstm1)
