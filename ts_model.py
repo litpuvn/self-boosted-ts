@@ -239,15 +239,33 @@ def create_model_mtl_only_temperature(horizon=1, nb_train_samples=512, batch_siz
 
 def create_model_mtv_temperature(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=11):
 
-    x = Input(shape=(6, 10), name='aux_input')
+    x = Input(shape=(6, feature_count), name="input_layer")
+    conv = Conv1D(kernel_size=3, filters=5, activation='relu')(x)
+    conv2 = Conv1D(5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(conv)
+    conv3 = Conv1D(5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv2)
 
-    out1 = Dense(8, name="spec_out1")(x)
-    out1 = Flatten()(out1)
+    mp = MaxPooling1D(pool_size=2)(conv3)
+    # conv2 = Conv1D(filters=5, kernel_size=3, activation='relu')(mp)
+    # mp = MaxPooling1D(pool_size=2)(conv2)
+
+    lstm1 = GRU(16, return_sequences=True)(mp)
+    lstm2 = GRU(32, return_sequences=True)(lstm1)
+
+    shared_dense = Dense(64, name="shared_layer")(lstm2)
+
+    ## sub1 is main task; units = reshape dimension multiplication
+    sub1 = GRU(units=60, name="task1")(shared_dense)
+
+    out1 = Dense(8, name="spec_out1")(sub1)
     out1 = Dense(1, name="out1")(out1)
+
     outputs = out1
 
     model = KerasModel(inputs=x, outputs=outputs)
+
     model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'mse'])
+    # Callbacks
+    # callbacks = [EarlyStopping(monitor='val_mse', patience=10)]
 
     model.summary()
 
@@ -363,20 +381,34 @@ def create_model_mtl_only_exchange_rate(horizon=1, nb_train_samples=512, batch_s
 
 
 def create_model_mtv_exchange_rate(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=6):
+    x = Input(shape=(6, feature_count), name="input_layer")
+    conv = Conv1D(kernel_size=3, filters=5, activation='relu')(x)
+    conv2 = Conv1D(5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(conv)
+    conv3 = Conv1D(5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv2)
+
+    mp = MaxPooling1D(pool_size=2)(conv3)
+    # conv2 = Conv1D(filters=5, kernel_size=3, activation='relu')(mp)
+    # mp = MaxPooling1D(pool_size=2)(conv2)
+
+    lstm1 = GRU(16, return_sequences=True)(mp)
+    lstm2 = GRU(32, return_sequences=True)(lstm1)
+
+    shared_dense = Dense(64, name="shared_layer")(lstm2)
+
+    ## sub1 is main task; units = reshape dimension multiplication
+    sub1 = GRU(units=48, name="task1")(shared_dense)
 
 
-    x = Input(shape=(6, 8), name='aux_input')
-
-
-    out1 = Dense(8, name="spec_out1")(x)
-    out1 = Flatten()(out1)
+    out1 = Dense(8, name="spec_out1")(sub1)
     out1 = Dense(1, name="out1")(out1)
+
 
     outputs = out1
 
     model = KerasModel(inputs=x, outputs=outputs)
 
-    model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'mse'])
+    model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'mse'],
+                  )
     # Callbacks
     # callbacks = [EarlyStopping(monitor='val_mse', patience=10)]
 

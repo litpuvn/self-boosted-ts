@@ -33,7 +33,8 @@ if __name__ == '__main__':
     valid_start_dt = '2004-10-30 14:00:00'
     test_start_dt = '2005-01-16 13:00:00'
 
-    features = ["load", "imf9", "imf10", "imf11"]
+    # features = ["load", "imf9", "imf10", "imf11"]
+    features = ["load"]
 
     aux_features = ["load"]
     for i in range(imfs_count):
@@ -49,6 +50,7 @@ if __name__ == '__main__':
                                                      features=aux_features,
                                                      target=["load"]
                                                      )
+    features = aux_features
 
     X_train = train_inputs['X']
     y_train = train_inputs['target_load']
