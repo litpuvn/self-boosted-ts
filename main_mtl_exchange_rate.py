@@ -3,7 +3,7 @@ import pandas as pd
 from common.TimeseriesTensor import TimeSeriesTensor
 from common.gp_log import store_training_loss, store_predict_points, flatten_test_predict
 from common.utils import load_data, split_train_validation_test, load_data_full, mape
-from ts_model import create_model, create_model_mtl, create_model_mtl_mtv, create_model_mtl_mtv_temperature, \
+from ts_model import create_model, create_model_mtl_mtv_temperature, \
     create_model_mtl_mtv_exchange_rate
 from kgp.metrics import root_mean_squared_error as RMSE
 import matplotlib.pyplot as plt
