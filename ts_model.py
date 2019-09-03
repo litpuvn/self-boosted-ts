@@ -236,6 +236,24 @@ def create_model_mtl_only_temperature(horizon=1, nb_train_samples=512, batch_siz
     return model
 
 
+
+def create_model_mtv_temperature(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=11):
+
+    x = Input(shape=(6, 10), name='aux_input')
+
+    out1 = Dense(8, name="spec_out1")(x)
+    out1 = Flatten()(out1)
+    out1 = Dense(1, name="out1")(out1)
+    outputs = out1
+
+    model = KerasModel(inputs=x, outputs=outputs)
+    model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'mse'])
+
+    model.summary()
+
+    return model
+
+
 def create_model_mtl_mtv_temperature(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=11):
 
     x = Input(shape=(6, feature_count), name="input_layer")
