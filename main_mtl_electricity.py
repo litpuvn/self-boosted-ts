@@ -15,16 +15,20 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_squared_log_error
 from sklearn.metrics import median_absolute_error
 from sklearn.metrics import r2_score
+import os
 
 if __name__ == '__main__':
 
-    time_step_lag = 12
+    time_step_lag = 1
     HORIZON = 1
 
     imfs_count = 13
 
     data_dir = 'data'
-    output_dir = 'output/electricity'
+    output_dir = 'output/electricity/mtl/lag' + str(time_step_lag)
+
+    os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(output_dir + '/model_checkpoint', exist_ok=True)
 
     multi_time_series = load_data_full(data_dir, datasource='electricity', imfs_count=imfs_count)
     print(multi_time_series.head())
@@ -87,11 +91,11 @@ if __name__ == '__main__':
 
     # LATENT_DIM = 5
     BATCH_SIZE = 32
-    EPOCHS = 500
+    EPOCHS = 20
 
     model = create_model_mtl_mtv_electricity(horizon=HORIZON, nb_train_samples=len(X_train),
                                  batch_size=32, feature_count=len(features), lag_time=time_step_lag)
-    earlystop = EarlyStopping(monitor='val_loss', patience=10)
+    earlystop = EarlyStopping(monitor='val_mse', patience=10)
 
     file_path = output_dir + '/model_checkpoint/weights-improvement-{epoch:02d}.hdf5'
     check_point = ModelCheckpoint(file_path, monitor='val_loss', verbose=0, save_best_only=True,
@@ -127,13 +131,13 @@ if __name__ == '__main__':
     evs = explained_variance_score(y1_test, y1_preds)
     mae = mean_absolute_error(y1_test, y1_preds)
     mse = mean_squared_error(y1_test, y1_preds)
-    msle = mean_squared_log_error(y1_test, y1_preds)
+    # msle = mean_squared_log_error(y1_test, y1_preds)
     meae = median_absolute_error(y1_test, y1_preds)
     r_square = r2_score(y1_test, y1_preds)
 
     mape_v = mape(y1_preds.reshape(-1, 1), y1_test.reshape(-1, 1))
 
     print('rmse_predict:', rmse_predict, "evs:", evs, "mae:", mae,
-          "mse:", mse, "msle:", msle, "meae:", meae, "r2:", r_square, "mape", mape_v)
+          "mse:", mse, "meae:", meae, "r2:", r_square, "mape", mape_v)
 
     store_predict_points(y1_test, y1_preds, output_dir + '/test_mtl_prediction_epochs_' + str(EPOCHS) + '.csv')

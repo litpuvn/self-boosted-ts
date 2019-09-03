@@ -18,7 +18,7 @@ from sklearn.metrics import r2_score
 
 if __name__ == '__main__':
 
-    time_step_lag = 6
+    time_step_lag = 1
     HORIZON = 1
 
     imfs_count = 12
@@ -72,7 +72,7 @@ if __name__ == '__main__':
     EPOCHS = 100
 
     model = create_model_mtv_temperature(horizon=HORIZON, nb_train_samples=len(X_train),
-                                 batch_size=32, feature_count=len(features))
+                                 batch_size=32, feature_count=len(features), lag_time=time_step_lag)
     earlystop = EarlyStopping(monitor='val_mse', patience=5)
 
     file_path = output_dir + '/model_checkpoint/weights-improvement-{epoch:02d}.hdf5'

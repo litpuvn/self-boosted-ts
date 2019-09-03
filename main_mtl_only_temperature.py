@@ -15,16 +15,20 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_squared_log_error
 from sklearn.metrics import median_absolute_error
 from sklearn.metrics import r2_score
+import os
 
 if __name__ == '__main__':
 
-    time_step_lag = 6
+    time_step_lag = 1
     HORIZON = 1
 
     imfs_count = 12
 
     data_dir = 'data'
-    output_dir = 'output/temperature/mtl'
+    output_dir = 'output/temperature/mtl/lag' + str(time_step_lag)
+
+    os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(output_dir + '/model_checkpoint', exist_ok=True)
 
     multi_time_series = load_data_full(data_dir, datasource='temperature', imfs_count=imfs_count)
     print(multi_time_series.head())
@@ -69,7 +73,7 @@ if __name__ == '__main__':
     EPOCHS = 100
 
     model = create_model_mtl_only_temperature(horizon=HORIZON, nb_train_samples=len(X_train),
-                                 batch_size=32, feature_count=len(features))
+                                 batch_size=32, feature_count=len(features), time_lag=time_step_lag)
     earlystop = EarlyStopping(monitor='val_mse', patience=5)
 
     file_path = output_dir + '/model_checkpoint/weights-improvement-{epoch:02d}.hdf5'

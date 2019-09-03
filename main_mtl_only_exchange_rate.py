@@ -19,7 +19,7 @@ from sklearn.metrics import r2_score
 
 if __name__ == '__main__':
 
-    time_step_lag = 6
+    time_step_lag = 3
     HORIZON = 1
 
     imfs_count = 11
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     EPOCHS = 100
 
     model = create_model_mtl_only_exchange_rate(horizon=HORIZON, nb_train_samples=len(X_train),
-                                 batch_size=32, feature_count=len(features))
+                                 batch_size=32, feature_count=len(features), time_lag=time_step_lag)
     earlystop = EarlyStopping(monitor='val_mse', patience=5)
 
     file_path = output_dir + '/model_checkpoint/weights-improvement-{epoch:02d}.hdf5'

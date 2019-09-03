@@ -16,16 +16,20 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_squared_log_error
 from sklearn.metrics import median_absolute_error
 from sklearn.metrics import r2_score
+import os
 
 if __name__ == '__main__':
 
-    time_step_lag = 6
+    time_step_lag = 1
     HORIZON = 1
 
     imfs_count = 11
 
     data_dir = 'data'
-    output_dir = 'output/exchange-rate'
+    output_dir = 'output/exchange-rate/mtl/lag' + str(time_step_lag)
+
+    os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(output_dir + '/model_checkpoint', exist_ok=True)
 
     multi_time_series = load_data_full(data_dir, datasource='exchange-rate', imfs_count=imfs_count, freq='d')
     print(multi_time_series.head())
@@ -96,7 +100,7 @@ if __name__ == '__main__':
     EPOCHS = 100
 
     model = create_model_mtl_mtv_exchange_rate(horizon=HORIZON, nb_train_samples=len(X_train),
-                                 batch_size=32, feature_count=len(features))
+                                 batch_size=32, feature_count=len(features), lag_time=time_step_lag)
     earlystop = EarlyStopping(monitor='val_mse', patience=5)
 
     file_path = output_dir + '/model_checkpoint/weights-improvement-{epoch:02d}.hdf5'
