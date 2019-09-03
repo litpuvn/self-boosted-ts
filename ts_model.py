@@ -137,9 +137,9 @@ def create_model_mtv_electricity(horizon=1, nb_train_samples=512, batch_size=32,
     return model
 
 
-def create_model_mtl_mtv_electricity(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=11):
+def create_model_mtl_mtv_electricity(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=11, lag_time=6):
 
-    x = Input(shape=(6, feature_count), name="input_layer")
+    x = Input(shape=(lag_time, feature_count), name="input_layer")
     conv = Conv1D(kernel_size=3, filters=5, activation='relu')(x)
     conv2 = Conv1D(5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(conv)
     conv3 = Conv1D(5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv2)
@@ -154,12 +154,12 @@ def create_model_mtl_mtv_electricity(horizon=1, nb_train_samples=512, batch_size
     shared_dense = Dense(64, name="shared_layer")(lstm2)
 
     ## sub1 is main task; units = reshape dimension multiplication
-    sub1 = GRU(units=72, name="task1")(shared_dense)
+    sub1 = GRU(units=(lag_time*12), name="task1")(shared_dense)
     sub2 = GRU(units=16, name="task2")(shared_dense)
     sub3 = GRU(units=16, name="task3")(shared_dense)
 
-    sub1 = Reshape((6, 12))(sub1)
-    auxiliary_input = Input(shape=(6, 12), name='aux_input')
+    sub1 = Reshape((lag_time, 12))(sub1)
+    auxiliary_input = Input(shape=(lag_time, 12), name='aux_input')
 
     concate = Concatenate(axis=-1)([sub1, auxiliary_input])
     # out1_gp = Dense(1, name="out1_gp")(sub1)
@@ -272,9 +272,9 @@ def create_model_mtv_temperature(horizon=1, nb_train_samples=512, batch_size=32,
     return model
 
 
-def create_model_mtl_mtv_temperature(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=11):
+def create_model_mtl_mtv_temperature(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=11, time_lag=6):
 
-    x = Input(shape=(6, feature_count), name="input_layer")
+    x = Input(shape=(time_lag, feature_count), name="input_layer")
     conv = Conv1D(kernel_size=3, filters=5, activation='relu')(x)
     conv2 = Conv1D(5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(conv)
     conv3 = Conv1D(5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv2)
@@ -289,13 +289,13 @@ def create_model_mtl_mtv_temperature(horizon=1, nb_train_samples=512, batch_size
     shared_dense = Dense(64, name="shared_layer")(lstm2)
 
     ## sub1 is main task; units = reshape dimension multiplication
-    sub1 = GRU(units=60, name="task1")(shared_dense)
+    sub1 = GRU(units=(time_lag*10), name="task1")(shared_dense)
     sub2 = GRU(units=16, name="task2")(shared_dense)
     sub3 = GRU(units=16, name="task3")(shared_dense)
     sub4 = GRU(units=16, name="task4")(shared_dense)
 
-    sub1 = Reshape((6, 10))(sub1)
-    auxiliary_input = Input(shape=(6, 10), name='aux_input')
+    sub1 = Reshape((time_lag, 10))(sub1)
+    auxiliary_input = Input(shape=(time_lag, 10), name='aux_input')
 
     concate = Concatenate(axis=-1)([sub1, auxiliary_input])
     # out1_gp = Dense(1, name="out1_gp")(sub1)
