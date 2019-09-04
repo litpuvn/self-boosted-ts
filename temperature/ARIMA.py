@@ -20,7 +20,7 @@ def RMSE(x):
     return sqrt(x)
 
 if __name__ == '__main__':
-    time_step_lag = 6
+    time_step_lag = 1
     HORIZON = 1
 
     data = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/temperature.csv', parse_dates=['Date_Time'])
