@@ -19,7 +19,7 @@ import os
 
 if __name__ == '__main__':
 
-    time_step_lag = 6
+    time_step_lag = 1
     HORIZON = 1
 
     imfs_count = 13
@@ -51,12 +51,12 @@ if __name__ == '__main__':
                                                      features=features,
                                                      target=features
                                                      )
-    aux_features = ["load", "imf10", "imf9", "imf11", "imf12"]
-    # aux_features = ["load"]
-    # for i in range(imfs_count):
-    #     l = 'imf' + str(i)
-    #     if l not in features:
-    #         aux_features.append(l)
+    # aux_features = ["load", "imf10", "imf9", "imf11", "imf12"]
+    aux_features = ["load"]
+    for i in range(imfs_count):
+        l = 'imf' + str(i)
+        if l not in features:
+            aux_features.append(l)
 
     aux_inputs, aux_valid_inputs, aux_test_inputs, aux_y_scaler = split_train_validation_test(multi_time_series,
                                                      valid_start_time=valid_start_dt,
