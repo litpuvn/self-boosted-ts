@@ -37,7 +37,7 @@ if __name__ == '__main__':
     valid_start_dt = '2002-06-18'
     test_start_dt = '2006-08-13'
 
-    features = ["load", "imf7", "imf8", "imf9", "imf10"]
+    features = ["load", "imf9", "imf10", "imf8", "imf7"]
 
     train_inputs, valid_inputs, test_inputs, y_scaler = split_train_validation_test(multi_time_series,
                                                      valid_start_time=valid_start_dt,
@@ -50,11 +50,12 @@ if __name__ == '__main__':
                                                     freq = 'd'
                                                         )
 
-    aux_features = ["load"]
-    for i in range(imfs_count):
-        l = 'imf' + str(i)
-        if l not in features:
-            aux_features.append(l)
+    # ['imf6', 'imf5', 'imf4', 'imf3', 'imf2', 'imf0', 'imf1']
+    aux_features = ["load", "imf6", "imf5", 'imf4', 'imf3', 'imf2', 'imf0', 'imf1']
+    # for i in range(imfs_count):
+    #     l = 'imf' + str(i)
+    #     if l not in features:
+    #         aux_features.append(l)
 
     aux_inputs, aux_valid_inputs, aux_test_inputs, aux_y_scaler = split_train_validation_test(multi_time_series,
                                                      valid_start_time=valid_start_dt,
@@ -69,18 +70,18 @@ if __name__ == '__main__':
 
     X_train = train_inputs['X']
     y1_train = train_inputs['target_load']
-    y2_train = train_inputs['target_imf7']
-    y3_train = train_inputs['target_imf8']
-    y4_train = train_inputs['target_imf9']
-    y5_train = train_inputs['target_imf10']
+    y2_train = train_inputs['target_imf9']
+    y3_train = train_inputs['target_imf10']
+    y4_train = train_inputs['target_imf8']
+    y5_train = train_inputs['target_imf7']
     y_train = [y1_train, y2_train, y3_train, y4_train, y5_train]
 
     X_valid = valid_inputs['X']
     y1_valid = valid_inputs['target_load']
-    y2_valid = valid_inputs['target_imf7']
-    y3_valid = valid_inputs['target_imf8']
-    y4_valid = valid_inputs['target_imf9']
-    y5_valid = valid_inputs['target_imf10']
+    y2_valid = valid_inputs['target_imf9']
+    y3_valid = valid_inputs['target_imf10']
+    y4_valid = valid_inputs['target_imf8']
+    y5_valid = valid_inputs['target_imf7']
     y_valid = [y1_valid, y2_valid, y3_valid, y4_valid, y5_valid]
 
     aux_train = aux_inputs['X']
@@ -97,10 +98,11 @@ if __name__ == '__main__':
 
     # LATENT_DIM = 5
     BATCH_SIZE = 32
-    EPOCHS = 50
+    EPOCHS = 100
 
     model = create_model_mtl_mtv_exchange_rate(horizon=HORIZON, nb_train_samples=len(X_train),
-                                 batch_size=32, feature_count=len(features), lag_time=time_step_lag)
+                                 batch_size=32, feature_count=len(features), lag_time=time_step_lag,
+                                               aux_feature_count=len(aux_features))
     earlystop = EarlyStopping(monitor='val_mse', patience=5)
 
     file_path = output_dir + '/model_checkpoint/weights-improvement-{epoch:02d}.hdf5'
@@ -124,12 +126,13 @@ if __name__ == '__main__':
     # Test the model
     X_test = test_inputs['X']
     y1_test = test_inputs['target_load']
-    y2_test = test_inputs['target_imf7']
-    y3_test = test_inputs['target_imf8']
-    y4_test = test_inputs['target_imf9']
-    y5_test = test_inputs['target_imf10']
+    y2_test = test_inputs['target_imf9']
+    y3_test = test_inputs['target_imf10']
+    y4_test = test_inputs['target_imf8']
+    y5_test = test_inputs['target_imf7']
 
     y1_preds, y2_preds, y3_preds, y4_preds, y5_preds = model.predict([X_test, aux_test])
+    # y1_preds, y2_preds, y3_preds, y4_preds = model.predict([X_test, aux_test])
 
     y1_test = y_scaler.inverse_transform(y1_test)
     y1_preds = y_scaler.inverse_transform(y1_preds)
