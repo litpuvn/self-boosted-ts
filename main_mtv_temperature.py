@@ -18,7 +18,7 @@ from sklearn.metrics import r2_score
 
 if __name__ == '__main__':
 
-    time_step_lag = 1
+    time_step_lag = 3
     HORIZON = 1
 
     imfs_count = 12

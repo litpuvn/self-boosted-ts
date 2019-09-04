@@ -305,7 +305,7 @@ def create_model_mtv_temperature(horizon=1, nb_train_samples=512, batch_size=32,
 def create_model_mtl_mtv_temperature(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=11, time_lag=6):
 
     x = Input(shape=(time_lag, feature_count), name="input_layer")
-    conv = Conv1D(filters=2, kernel_size=1, activation='relu')(x)
+    conv = Conv1D(filters=5, kernel_size=1, activation='relu')(x)
     conv2 = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(conv)
     conv3 = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv2)
 
@@ -360,9 +360,9 @@ def create_model_mtl_mtv_temperature(horizon=1, nb_train_samples=512, batch_size
 def create_model_mtl_only_exchange_rate(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=6, time_lag=6):
 
     x = Input(shape=(time_lag, feature_count), name="input_layer")
-    conv = Conv1D(kernel_size=1, filters=5, activation='relu')(x)
-    conv2 = Conv1D(5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(conv)
-    conv3 = Conv1D(5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv2)
+    conv = Conv1D(filters=5, kernel_size=1, activation='relu')(x)
+    conv2 = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(conv)
+    conv3 = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv2)
 
     mp = MaxPooling1D(pool_size=1)(conv3)
     # conv2 = Conv1D(filters=5, kernel_size=3, activation='relu')(mp)
@@ -412,11 +412,11 @@ def create_model_mtl_only_exchange_rate(horizon=1, nb_train_samples=512, batch_s
 
 def create_model_mtv_exchange_rate(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=6, time_lag=6):
     x = Input(shape=(time_lag, feature_count), name="input_layer")
-    conv = Conv1D(kernel_size=1, filters=5, activation='relu')(x)
-    conv2 = Conv1D(5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(conv)
-    conv3 = Conv1D(5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv2)
+    conv = Conv1D(filters=5, kernel_size=3, activation='relu')(x)
+    conv2 = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(conv)
+    conv3 = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv2)
 
-    mp = MaxPooling1D(pool_size=1)(conv3)
+    mp = MaxPooling1D(pool_size=2)(conv3)
     # conv2 = Conv1D(filters=5, kernel_size=3, activation='relu')(mp)
     # mp = MaxPooling1D(pool_size=2)(conv2)
 
@@ -496,7 +496,7 @@ def create_model_mtl_mtv_exchange_rate(horizon=1, nb_train_samples=512, batch_si
     model = KerasModel(inputs=[x, auxiliary_input], outputs=outputs)
 
 
-    model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'mse'], loss_weights=[0.5, 0.25, 0.25, 0.25, 0.25])
+    model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'mse'], loss_weights=[0.5, 0.005, 0.005, 0.005, 0.005])
     # Callbacks
     # callbacks = [EarlyStopping(monitor='val_mse', patience=10)]
 

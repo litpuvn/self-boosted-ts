@@ -20,7 +20,7 @@ import os
 
 if __name__ == '__main__':
 
-    time_step_lag = 1
+    time_step_lag = 3
     HORIZON = 1
 
     imfs_count = 11
@@ -88,16 +88,16 @@ if __name__ == '__main__':
     aux_test = aux_test_inputs['X']
 
     # input_x = train_inputs['X']
-    print("train_X shape", X_train.shape)
-    print("valid_X shape", X_valid.shape)
-    print("aux_train shape", aux_train.shape)
+    print("train_X shape", X_train.shape, "train_Y shape:", y1_train.shape)
+    print("valid_X shape", X_valid.shape, "valid Y shape:", y1_valid.shape)
+    print("aux_train shape", aux_train.shape, "aux valid Y shape", aux_valid.shape)
     # print("target shape", y_train.shape)
     # print("training size:", len(train_inputs['X']), 'validation', len(valid_inputs['X']), 'test size:', len(test_inputs['X']) )
     # print("sum sizes", len(train_inputs['X']) + len(valid_inputs['X']) + len(test_inputs['X']))
 
     # LATENT_DIM = 5
     BATCH_SIZE = 32
-    EPOCHS = 100
+    EPOCHS = 50
 
     model = create_model_mtl_mtv_exchange_rate(horizon=HORIZON, nb_train_samples=len(X_train),
                                  batch_size=32, feature_count=len(features), lag_time=time_step_lag)
