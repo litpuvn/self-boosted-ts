@@ -28,7 +28,7 @@ def RMSE(x):
 if __name__ == '__main__':
 
 
-    time_step_lag = 6
+    time_step_lag = 12
 
     HORIZON = 1
 

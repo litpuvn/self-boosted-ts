@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 from math import sqrt
+
+from pandas import DatetimeIndex
 from pandas.plotting import autocorrelation_plot
 from statsmodels.tsa.arima_model import ARIMA
 from sklearn.metrics import mean_squared_error
@@ -18,39 +20,20 @@ def RMSE(x):
     return sqrt(x)
 
 if __name__ == '__main__':
-    time_step_lag = 1
+    time_step_lag = 6
     HORIZON = 1
 
+    data = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/temperature.csv', parse_dates=['Date_Time'])
+    data.index = data['Date_Time']
+    data = data.reindex(pd.date_range(min(data['Date_Time']), max(data['Date_Time']), freq='H'))
+    data = data.drop('Date_Time', axis=1)
+
+    data = data[['temperature']]
+
+    series = data
 
 
-    series = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/clean_electricity.csv', parse_dates=['time'])
-    series.index = series['time']
-    series = series.reindex(pd.date_range(min(series['time']), max(series['time']), freq='H'))
-    series = series.drop('time', axis=1)
 
-    series = series[['avg_electricity']]
-
-    # series.plot()
-    # plt.show()
-    #
-    #
-    #
-    # autocorrelation_plot(series)
-    # plt.show()
-    #
-    #
-    #
-    # # fit model
-    # model = ARIMA(series, order=(5, 1, 0))
-    # model_fit = model.fit(disp=0)
-    # # print(model_fit.summary())
-    #
-    # # plot residual erros
-    # residuals = pd.DataFrame(model_fit.resid)
-    # residuals.plot()
-    # residuals.plot(kind='kde')
-    # plt.show()
-    # print(residuals.describe())
 
     X = series.values
     size = int(len(X) * 0.66)
@@ -83,7 +66,6 @@ if __name__ == '__main__':
     rmse_predict = RMSE(mse)
     evs = explained_variance_score(test, predictions)
     mae = mean_absolute_error(test, predictions)
-
 
     meae = median_absolute_error(test, predictions)
 

@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 from math import sqrt
+
+from pandas import DatetimeIndex
 from pandas.plotting import autocorrelation_plot
 from statsmodels.tsa.arima_model import ARIMA
 from sklearn.metrics import mean_squared_error
@@ -18,39 +20,18 @@ def RMSE(x):
     return sqrt(x)
 
 if __name__ == '__main__':
-    time_step_lag = 1
+    time_step_lag = 12
     HORIZON = 1
 
+    target = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/exchange_rate.txt', header=0, usecols=[0])
 
+    dt_idx = DatetimeIndex(freq='d', start='1990-01-01 00:00:00', periods=7588)
 
-    series = pd.read_csv('/home/ope/Documents/Projects/self-boosted-ts/data/clean_electricity.csv', parse_dates=['time'])
-    series.index = series['time']
-    series = series.reindex(pd.date_range(min(series['time']), max(series['time']), freq='H'))
-    series = series.drop('time', axis=1)
+    target.index = dt_idx
 
-    series = series[['avg_electricity']]
-
-    # series.plot()
-    # plt.show()
-    #
-    #
-    #
-    # autocorrelation_plot(series)
-    # plt.show()
-    #
-    #
-    #
-    # # fit model
-    # model = ARIMA(series, order=(5, 1, 0))
-    # model_fit = model.fit(disp=0)
-    # # print(model_fit.summary())
-    #
-    # # plot residual erros
-    # residuals = pd.DataFrame(model_fit.resid)
-    # residuals.plot()
-    # residuals.plot(kind='kde')
-    # plt.show()
-    # print(residuals.describe())
+    target.to_csv("time_exchange_rage.csv")
+    series = target
+    series = series[['rate']]
 
     X = series.values
     size = int(len(X) * 0.66)
@@ -83,7 +64,6 @@ if __name__ == '__main__':
     rmse_predict = RMSE(mse)
     evs = explained_variance_score(test, predictions)
     mae = mean_absolute_error(test, predictions)
-
 
     meae = median_absolute_error(test, predictions)
 
