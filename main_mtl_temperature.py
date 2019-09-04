@@ -18,7 +18,7 @@ from sklearn.metrics import r2_score
 
 if __name__ == '__main__':
 
-    time_step_lag = 1
+    time_step_lag = 6
     HORIZON = 1
 
     imfs_count = 12
@@ -33,6 +33,7 @@ if __name__ == '__main__':
     valid_start_dt = '2004-10-30 14:00:00'
     test_start_dt = '2005-01-16 13:00:00'
 
+    # features = ["load", "imf9", "imf10", "imf11"]
     features = ["load", "imf9", "imf10", "imf11"]
 
     train_inputs, valid_inputs, test_inputs, y_scaler = split_train_validation_test(multi_time_series,
@@ -43,11 +44,14 @@ if __name__ == '__main__':
                                                      features=features,
                                                      target=features
                                                      )
-    aux_features = ["load"]
-    for i in range(imfs_count):
-        l = 'imf' + str(i)
-        if l not in features:
-            aux_features.append(l)
+
+    aux_features = ['load', 'imf3', 'imf2', 'imf8', 'imf6', 'imf7', 'imf5', 'imf4', 'imf1', 'imf0']
+    # aux_features = ['load', 'imf3', 'imf2', 'imf8', 'imf6', 'imf7', 'imf5', 'imf4', 'imf1']
+    # aux_features = ["load"]
+    # for i in range(imfs_count):
+    #     l = 'imf' + str(i)
+    #     if l not in features:
+    #         aux_features.append(l)
 
     aux_inputs, aux_valid_inputs, aux_test_inputs, aux_y_scaler = split_train_validation_test(multi_time_series,
                                                      valid_start_time=valid_start_dt,
@@ -89,7 +93,7 @@ if __name__ == '__main__':
     EPOCHS = 50
 
     model = create_model_mtl_mtv_temperature(horizon=HORIZON, nb_train_samples=len(X_train),
-                                 batch_size=32, feature_count=len(features), time_lag=time_step_lag)
+                                 batch_size=32, feature_count=len(features), time_lag=time_step_lag, aux_feature_count=len(aux_features))
     earlystop = EarlyStopping(monitor='val_mse', patience=10)
 
     file_path = output_dir + '/model_checkpoint/weights-improvement-{epoch:02d}.hdf5'

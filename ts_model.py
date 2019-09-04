@@ -303,14 +303,14 @@ def create_model_mtv_temperature(horizon=1, nb_train_samples=512, batch_size=32,
     return model
 
 
-def create_model_mtl_mtv_temperature(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=11, time_lag=6):
+def create_model_mtl_mtv_temperature(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=11, time_lag=6, aux_feature_count=10):
 
     x = Input(shape=(time_lag, feature_count), name="input_layer")
-    conv = Conv1D(filters=5, kernel_size=1, activation='relu')(x)
+    conv = Conv1D(filters=5, kernel_size=3, activation='relu')(x)
     conv2 = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(conv)
     conv3 = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv2)
 
-    mp = MaxPooling1D(pool_size=1)(conv3)
+    mp = MaxPooling1D(pool_size=2)(conv3)
     # conv2 = Conv1D(filters=5, kernel_size=3, activation='relu')(mp)
     # mp = MaxPooling1D(pool_size=2)(conv2)
 
@@ -320,13 +320,13 @@ def create_model_mtl_mtv_temperature(horizon=1, nb_train_samples=512, batch_size
     shared_dense = Dense(64, name="shared_layer")(lstm2)
 
     ## sub1 is main task; units = reshape dimension multiplication
-    sub1 = GRU(units=(time_lag*10), name="task1")(shared_dense)
+    sub1 = GRU(units=(time_lag*aux_feature_count), name="task1")(shared_dense)
     sub2 = GRU(units=16, name="task2")(shared_dense)
     sub3 = GRU(units=16, name="task3")(shared_dense)
     sub4 = GRU(units=16, name="task4")(shared_dense)
 
-    sub1 = Reshape((time_lag, 10))(sub1)
-    auxiliary_input = Input(shape=(time_lag, 10), name='aux_input')
+    sub1 = Reshape((time_lag, aux_feature_count))(sub1)
+    auxiliary_input = Input(shape=(time_lag, aux_feature_count), name='aux_input')
 
     concate = Concatenate(axis=-1)([sub1, auxiliary_input])
     # out1_gp = Dense(1, name="out1_gp")(sub1)
@@ -339,7 +339,7 @@ def create_model_mtl_mtv_temperature(horizon=1, nb_train_samples=512, batch_size
 
     out3 = Dense(1, name="spec_out3")(sub3)
     out3 = Dense(1, name="out3")(out3)
-
+    #
     out4 = Dense(1, name="spec_out4")(sub4)
     out4 = Dense(1, name="out4")(out4)
 
@@ -348,7 +348,7 @@ def create_model_mtl_mtv_temperature(horizon=1, nb_train_samples=512, batch_size
     model = KerasModel(inputs=[x, auxiliary_input], outputs=outputs)
 
 
-    model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'mse'], loss_weights=[0.5, 0.25, 0.25, 0.25])
+    model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'mse'], loss_weights=[0.5, 0.05, 0.05, 0.05])
     # Callbacks
     # callbacks = [EarlyStopping(monitor='val_mse', patience=10)]
 
