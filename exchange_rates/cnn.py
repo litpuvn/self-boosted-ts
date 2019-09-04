@@ -19,13 +19,13 @@ def RMSE(x):
 
 if __name__ == '__main__':
 
-    time_step_lag = 6
+    time_step_lag = 1
     HORIZON = 1
 
     imfs_count = 0 # set equal to zero for not considering IMFs features
 
-    data_dir = '/home/long/TTU-SOURCES/self-boosted-ts/data'
-    output_dir = '/home/long/TTU-SOURCES/self-boosted-ts/output/exchange-rate'
+    data_dir = '/home/ope/Documents/Projects/self-boosted-ts/data/'
+    output_dir = '/home/ope/Documents/Projects/self-boosted-ts/output/exchange-rate'
     #
     multi_time_series = load_data_full(data_dir, datasource='exchange-rate', imfs_count=imfs_count, freq='d')
     print(multi_time_series.head())
