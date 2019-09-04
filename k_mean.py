@@ -7,10 +7,6 @@ e_data = [0.03788537229453167, 0.11665254672338256, 0.6616966252625939, 0.818835
 0.20996469152596825, 0.20252115592293604
           ]
 
-ex_data_bk = [0.0069303409746495435, 0.002442251309461421, 0.005327699568028937,  0.050703274300547135, 0.09582940052385575,
-0.17208851307884449, 0.2738037115393964, 0.34219125157608593, 0.4713069255528447, 0.7936782808501517, 0.5271338601990524
-           ]
-
 ex_data = [0.0018083438641824277, 0.0011816417020305075, 0.0269321735714387, 0.02935233686301139, 0.0772517772509588,
 0.10128753647345597, 0.21677932228933564,  0.363447769185964, 0.5248504892948052, 0.8116422657606988, 0.5276822732467228
            ]
@@ -27,14 +23,25 @@ correlation_data = {
 }
 
 
+my_data = ex_data
+tmp = dict()
 
-for name, corr_data in correlation_data.items():
-    print("Clustering imfs of data", name)
-    ## reshape for data with single feature
-    x = np.array(corr_data).reshape(-1, 1)
-    ## clustering
-    km = KMeans(n_clusters=2, init='random', max_iter=100, n_init=1)
-    km.fit(x)
+for idx, v in enumerate(my_data):
+    tmp[str(v)] = "imf" + str(idx)
 
-    labels = km.predict(x)
-    print("labels:", labels)
+imf_sorted = [tmp[str(v)] for v in sorted(my_data)]
+
+imf_sorted.reverse()
+
+print("Total:", len(imf_sorted), imf_sorted)
+#
+# for name, corr_data in correlation_data.items():
+#     print("Clustering imfs of data", name)
+#     ## reshape for data with single feature
+#     x = np.array(corr_data).reshape(-1, 1)
+#     ## clustering
+#     km = KMeans(n_clusters=2, init='random', max_iter=100, n_init=1)
+#     km.fit(x)
+#
+#     labels = km.predict(x)
+#     print("labels:", labels)
