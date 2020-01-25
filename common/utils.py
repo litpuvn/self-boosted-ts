@@ -122,22 +122,17 @@ def split_train_validation_test(multi_time_series_df, valid_start_time, test_sta
     X_scaler = MinMaxScaler()
     y_scaler = MinMaxScaler()
 
-    tg = train[target]
-    y_scaler.fit(tg)
+    # 'load' is our key target. If it is in features, then we scale it.
+    # if it not 'load', then we scale the first column
+    if 'load' in features:
+        y_scaler = MinMaxScaler()
+        tg = train[['load']]
+        y_scaler.fit(tg)
+    else:
 
-
-
-    # if 'load' in features:
-    #     y_scaler = MinMaxScaler()
-    #     tg = train[['load']]
-    #     tg2 = train[target]
-    #     # tg2_reshaped = tg.values.reshape(-1, 1)
-    #     y_scaler.fit(tg2)
-    # else:
-    #     y_scaler = MinMaxScaler()
-    #
-    #     tg = train[target]
-    #     y_scaler.fit(tg.values.reshape(-1, 1))
+        tg = train[target]
+        ## scale the first column
+        y_scaler.fit(tg.values.reshape(-1, 1))
 
     train[features] = X_scaler.fit_transform(train_features)
 
