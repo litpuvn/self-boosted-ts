@@ -19,13 +19,14 @@ import os
 
 if __name__ == '__main__':
 
-    time_step_lag = 1
-    HORIZON = 1
+    time_step_lag = 6
+    HORIZON = 5
 
     imfs_count = 13
 
     data_dir = 'data'
-    output_dir = 'output/electricity/mtl/lag' + str(time_step_lag)
+    # output_dir = 'output/electricity/mtl/lag' + str(time_step_lag)
+    output_dir = 'output/electricity/mtl_mtv/horizon_' + str(HORIZON) + '/lag' + str(time_step_lag)
 
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(output_dir + '/model_checkpoint', exist_ok=True)
@@ -39,9 +40,9 @@ if __name__ == '__main__':
 
     valid_start_dt = '2013-05-26 14:15:00'
     test_start_dt = '2014-03-14 19:15:00'
-    # features = ["load", "imf0", "imf1", "imf2", "imf3", "imf4", "imf5", "imf6", "imf7", "imf8", "imf9"]
+    features = ["load", "imf0", "imf1", "imf4", "imf5", "imf6", "imf7", "imf8", "imf9"]
     # features = ["load", "imf2", "imf3"]
-    features = ["load", "imf3", "imf2"]
+    targets = ["load", "imf3", "imf2"]
 
     train_inputs, valid_inputs, test_inputs, y_scaler = split_train_validation_test(multi_time_series,
                                                      valid_start_time=valid_start_dt,
@@ -49,7 +50,7 @@ if __name__ == '__main__':
                                                      time_step_lag=time_step_lag,
                                                      horizon=HORIZON,
                                                      features=features,
-                                                     target=features
+                                                     target=targets
                                                      )
     # aux_features = ["load", "imf10", "imf9", "imf11", "imf12"]
     aux_features = ["load"]
