@@ -49,7 +49,8 @@ class TimeSeriesTensor(UserDict):
         df = self.dataset.copy()
 
         idx_tuples = []
-        for t in range(1, H + 1):
+        ## long: take target at horizon H only
+        for t in range(H, H + 1):
             for i in range(self.target_count):
                 cur_target = self.targets[i]
                 df[cur_target + '_t+' + str(t)] = df[cur_target].shift(t * -1, freq=freq)
