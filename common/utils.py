@@ -118,14 +118,14 @@ def split_train_validation_test(multi_time_series_df, valid_start_time, test_sta
 
     train = multi_time_series_df.copy()[multi_time_series_df.index < valid_start_time]
     train_features = train[features]
+    train_targets = train[target]
 
     X_scaler = MinMaxScaler()
+    target_scaler = MinMaxScaler()
     y_scaler = MinMaxScaler()
-
     # 'load' is our key target. If it is in features, then we scale it.
     # if it not 'load', then we scale the first column
     if 'load' in features:
-        y_scaler = MinMaxScaler()
         tg = train[['load']]
         y_scaler.fit(tg)
     else:
@@ -134,7 +134,11 @@ def split_train_validation_test(multi_time_series_df, valid_start_time, test_sta
         ## scale the first column
         y_scaler.fit(tg.values.reshape(-1, 1))
 
-    train[features] = X_scaler.fit_transform(train_features)
+    train[target] = target_scaler.fit_transform(train_targets)
+
+
+    X_scaler.fit(train_features)
+    train[features] = X_scaler.transform(train_features)
 
     tensor_structure = {'X': (range(-time_step_lag + 1, 1), features)}
     train_inputs = TimeSeriesTensor(train, target=target, H=horizon, freq=freq, tensor_structure=tensor_structure)
