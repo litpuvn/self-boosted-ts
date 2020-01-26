@@ -20,13 +20,14 @@ import os
 
 if __name__ == '__main__':
 
-    time_step_lag = 3
-    HORIZON = 1
+    time_step_lag = 6
+    HORIZON = 5
 
     imfs_count = 11
 
     data_dir = 'data'
-    output_dir = 'output/exchange-rate/mtl/lag' + str(time_step_lag)
+    # output_dir = 'output/exchange-rate/mtl/lag' + str(time_step_lag)
+    output_dir = 'output/exchange-rate/mtl_mtv/horizon_' + str(HORIZON) + '/lag' + str(time_step_lag)
 
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(output_dir + '/model_checkpoint', exist_ok=True)
@@ -38,6 +39,7 @@ if __name__ == '__main__':
     test_start_dt = '2006-08-13'
 
     features = ["load", "imf9", "imf10", "imf8", "imf7"]
+    targets = ["load", "imf9", "imf10", "imf8", "imf7"]
 
     train_inputs, valid_inputs, test_inputs, y_scaler = split_train_validation_test(multi_time_series,
                                                      valid_start_time=valid_start_dt,
@@ -45,7 +47,7 @@ if __name__ == '__main__':
                                                      time_step_lag=time_step_lag,
                                                      horizon=HORIZON,
                                                      features=features,
-                                                     target=features,
+                                                     target=targets,
                                                     time_format = '%Y-%m-%d',
                                                     freq = 'd'
                                                         )

@@ -453,11 +453,11 @@ def create_model_mtv_exchange_rate(horizon=1, nb_train_samples=512, batch_size=3
 def create_model_mtl_mtv_exchange_rate(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=6, lag_time=6, aux_feature_count=8):
 
     x = Input(shape=(lag_time, feature_count), name="input_layer")
-    conv = Conv1D(filters=5, kernel_size=1, activation='relu')(x)
-    conv2 = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(conv)
-    conv3 = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv2)
+    # conv = Conv1D(filters=5, kernel_size=1, activation='relu')(x)
+    conv = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(x)
+    # conv = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv)
 
-    mp = MaxPooling1D(pool_size=1)(conv3)
+    mp = MaxPooling1D(pool_size=1)(conv)
     # conv2 = Conv1D(filters=5, kernel_size=3, activation='relu')(mp)
     # mp = MaxPooling1D(pool_size=2)(conv2)
 
