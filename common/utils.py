@@ -7,6 +7,7 @@ from pandas.core.indexes.datetimes import DatetimeIndex
 import datetime as dt
 
 from sklearn.preprocessing.data import MinMaxScaler
+from sklearn.preprocessing.data import StandardScaler
 
 from common.TimeseriesTensor import TimeSeriesTensor
 from sklearn.utils import check_array
@@ -120,9 +121,15 @@ def split_train_validation_test(multi_time_series_df, valid_start_time, test_sta
     train_features = train[features]
     train_targets = train[target]
 
-    X_scaler = MinMaxScaler()
-    target_scaler = MinMaxScaler()
-    y_scaler = MinMaxScaler()
+    # X_scaler = MinMaxScaler()
+    # target_scaler = MinMaxScaler()
+    # y_scaler = MinMaxScaler()
+
+    X_scaler = StandardScaler()
+    target_scaler = StandardScaler()
+    y_scaler = StandardScaler()
+
+
     # 'load' is our key target. If it is in features, then we scale it.
     # if it not 'load', then we scale the first column
     if 'load' in features:
