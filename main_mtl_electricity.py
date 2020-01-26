@@ -16,11 +16,14 @@ from sklearn.metrics import mean_squared_log_error
 from sklearn.metrics import median_absolute_error
 from sklearn.metrics import r2_score
 import os
+import numpy as np
+
 
 if __name__ == '__main__':
 
     time_step_lag = 6
-    HORIZON = 5
+    # HORIZON = 3
+    HORIZON = 1
 
     imfs_count = 13
 
@@ -40,8 +43,8 @@ if __name__ == '__main__':
 
     valid_start_dt = '2013-05-26 14:15:00'
     test_start_dt = '2014-03-14 19:15:00'
-    features = ["load", "imf0", "imf1", "imf4", "imf5", "imf6", "imf7", "imf8", "imf9"]
-    # features = ["load", "imf2", "imf3"]
+    # features = ["load", "imf0", "imf1", "imf4", "imf5", "imf6", "imf7", "imf8", "imf9", "imf10", "imf11", "imf12"]
+    features = ["load", "imf2", "imf3"]
     targets = ["load", "imf3", "imf2"]
 
     train_inputs, valid_inputs, test_inputs, y_scaler = split_train_validation_test(multi_time_series,
@@ -52,7 +55,7 @@ if __name__ == '__main__':
                                                      features=features,
                                                      target=targets
                                                      )
-    # aux_features = ["load", "imf10", "imf9", "imf11", "imf12"]
+    # aux_features = ["load", "imf0", "imf1", "imf4", "imf5", "imf6", "imf7", "imf8", "imf9", "imf10", "imf11", "imf12"]
     aux_features = ["load"]
     for i in range(imfs_count):
         l = 'imf' + str(i)
@@ -94,7 +97,9 @@ if __name__ == '__main__':
 
     # LATENT_DIM = 5
     BATCH_SIZE = 32
-    EPOCHS = 100
+    # EPOCHS = 50
+    EPOCHS = 20
+    # EPOCHS = 5
 
     model = create_model_mtl_mtv_electricity(horizon=HORIZON, nb_train_samples=len(X_train),
                                  batch_size=32, feature_count=len(features), lag_time=time_step_lag,
