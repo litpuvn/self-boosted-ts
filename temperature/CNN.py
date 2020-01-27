@@ -48,7 +48,7 @@ def RMSE(x):
 
 if __name__ == '__main__':
     time_step_lag = 6
-    HORIZON = 1
+    HORIZON = 9
 
     imfs_count = 0  # set equal to zero for not considering IMFs features
 
@@ -67,7 +67,7 @@ if __name__ == '__main__':
                                                                                     time_step_lag=time_step_lag,
                                                                                     horizon=HORIZON,
                                                                                     features=["load"],
-                                                                                    target='load'
+                                                                                    target=['load']
                                                                                     )
 
     X_train = train_inputs['X']
@@ -105,7 +105,7 @@ if __name__ == '__main__':
     model.add(
         Conv1D(LATENT_DIM, kernel_size=KERNEL_SIZE, padding='causal', strides=1, activation='relu', dilation_rate=4))
     model.add(Flatten())
-    model.add(Dense(HORIZON, activation='linear'))
+    model.add(Dense(1, activation='linear'))
 
     model.summary()
 
@@ -140,9 +140,10 @@ if __name__ == '__main__':
     r_square = r2_score(y1_test, y1_preds)
     mape_v = mape(y1_preds.reshape(-1, 1), y1_test.reshape(-1, 1))
 
-    print("mse:", mse, 'rmse_predict:', rmse_predict, "mae:", mae, "mape:", mape_v, "r2:", r_square,
-          "meae:", meae, "evs:", evs)
+    # print("mse:", mse, 'rmse_predict:', rmse_predict, "mae:", mae, "mape:", mape_v, "r2:", r_square,
+    #       "meae:", meae, "evs:", evs)
 
-
+    print('rmse_predict:', rmse_predict, "evs:", evs, "mae:", mae,
+          "mse:", mse, "meae:", meae, "r2:", r_square, "mape", mape_v)
 
 
