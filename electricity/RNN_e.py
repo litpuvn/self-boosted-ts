@@ -50,13 +50,13 @@ def RMSE(x):
     return sqrt(x)
 
 if __name__ == '__main__':
-    time_step_lag = 12
-    HORIZON = 1
+    time_step_lag = 6
+    HORIZON = 9
 
     imfs_count = 0 # set equal to zero for not considering IMFs features
 
-    data_dir = '/home/ope/Documents/Projects/self-boosted-ts/data/'
-    output_dir = '/home/ope/Documents/Projects/self-boosted-ts/output/electricity'
+    data_dir = '/home/long/TTU-SOURCES/self-boosted-ts/data'
+    output_dir = '/home/long/TTU-SOURCES/self-boosted-ts/output/temperature'
 
     multi_time_series = load_data_full(data_dir, datasource='electricity', imfs_count=imfs_count)
     print(multi_time_series.head())
@@ -74,7 +74,7 @@ if __name__ == '__main__':
                                                                                     time_step_lag=time_step_lag,
                                                                                     horizon=HORIZON,
                                                                                     features=["load"],
-                                                                                    target='load'
+                                                                                    target=['load']
                                                                                     )
 
     X_train = train_inputs['X']
@@ -101,7 +101,7 @@ if __name__ == '__main__':
 
     model = Sequential()
     model.add(GRU(LATENT_DIM, input_shape=(time_step_lag, 1)))
-    model.add(Dense(HORIZON))
+    model.add(Dense(1))
     model.compile(optimizer='RMSprop', loss='mse')
     model.summary()
 
@@ -135,6 +135,10 @@ if __name__ == '__main__':
     r_square = r2_score(y1_test, y1_preds)
     mape_v = mape(y1_preds.reshape(-1, 1), y1_test.reshape(-1, 1))
 
-    print("mse:", mse, 'rmse_predict:', rmse_predict, "mae:", mae, "mape:", mape_v, "r2:", r_square,
-          "meae:", meae, "evs:", evs)
+    # print("mse:", mse, 'rmse_predict:', rmse_predict, "mae:", mae, "mape:", mape_v, "r2:", r_square,
+    #       "meae:", meae, "evs:", evs)
+
+
+    print('rmse_predict:', rmse_predict, "evs:", evs, "mae:", mae,
+          "mse:", mse, "meae:", meae, "r2:", r_square, "mape", mape_v)
 
