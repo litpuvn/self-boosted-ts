@@ -56,7 +56,7 @@ if __name__ == '__main__':
     imfs_count = 0 # set equal to zero for not considering IMFs features
 
     data_dir = '/home/long/TTU-SOURCES/self-boosted-ts/data'
-    output_dir = '/home/long/TTU-SOURCES/self-boosted-ts/output/temperature'
+    output_dir = '/home/long/TTU-SOURCES/self-boosted-ts/output/electricity'
 
     multi_time_series = load_data_full(data_dir, datasource='electricity', imfs_count=imfs_count)
     print(multi_time_series.head())
