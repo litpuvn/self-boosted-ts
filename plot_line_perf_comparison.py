@@ -1,6 +1,9 @@
 import seaborn as sns
 from sklearn import preprocessing
 import numpy as np
+from math import floor
+from math import ceil
+
 from scipy.interpolate import make_interp_spline, BSpline
 from sklearn.preprocessing.data import MinMaxScaler
 
@@ -12,7 +15,7 @@ plt.rcParams.update({'font.size': 14,
                     'legend.fontsize': 14,
                      })
 
-fig, ax = plt.subplots(figsize=(6, 2))
+fig, ax = plt.subplots(figsize=(8, 5))
 
 
 data = {
@@ -25,19 +28,6 @@ data = {
         'Self-boosted': [80.7800216098457, 125.884031056754, 166.07100229556073, 187.81365138799708, 178.61930042880613]
     },
 
-    'exchange_rate': {
-        'RNN-GRU': [126.27993660120123, 103.44295836003958, 96.13352645214277, 96.33634984390224, 102.19951055894728,
-                        92.28384003569212, 93.03786696703503, 92.59590053266247, 93.93262426378193, 92.61991129328025,
-                        91.55383227856858, 85.96056269611333],
-
-        'D-CNN': [2.2497826994122776, 1.8967160863507884, 1.7185949667947846, 1.3502297782362, 1.3672734843484213,
-                        1.69977688190889, 1.9854489919369387, 3.0239465816163285, 3.518981975370067, 4.86662707737258,
-                        3.471324563701506],
-
-        'Seq2seq': [0.007529017005649577, 0.007328292588766152, 0.006986319846778477, 0.007398312227230334,
-                          0.010132788473359567, 0.00919169121037186, 0.008189049546508244, 0.00816905158546414,
-                          0.009940578222472672, 0.006962016885383331]
-    },
     'temperature': {
         'RNN-GRU': [126.27993660120123, 103.44295836003958, 96.13352645214277, 96.33634984390224, 102.19951055894728,
                         92.28384003569212, 93.03786696703503, 92.59590053266247, 93.93262426378193, 92.61991129328025,
@@ -50,7 +40,21 @@ data = {
         'Seq2seq': [0.007529017005649577, 0.007328292588766152, 0.006986319846778477, 0.007398312227230334,
                           0.010132788473359567, 0.00919169121037186, 0.008189049546508244, 0.00816905158546414,
                           0.009940578222472672, 0.006962016885383331]
-    }
+    },
+
+    'exchange_rate': {
+        'RNN-GRU': [126.27993660120123, 103.44295836003958, 96.13352645214277, 96.33634984390224, 102.19951055894728,
+                    92.28384003569212, 93.03786696703503, 92.59590053266247, 93.93262426378193, 92.61991129328025,
+                    91.55383227856858, 85.96056269611333],
+
+        'D-CNN': [2.2497826994122776, 1.8967160863507884, 1.7185949667947846, 1.3502297782362, 1.3672734843484213,
+                  1.69977688190889, 1.9854489919369387, 3.0239465816163285, 3.518981975370067, 4.86662707737258,
+                  3.471324563701506],
+
+        'Seq2seq': [0.007529017005649577, 0.007328292588766152, 0.006986319846778477, 0.007398312227230334,
+                    0.010132788473359567, 0.00919169121037186, 0.008189049546508244, 0.00816905158546414,
+                    0.009940578222472672, 0.006962016885383331]
+    },
 
 
 }
@@ -61,13 +65,15 @@ def create_scaler():
     global dataset
     global data
 
-    scaler = MinMaxScaler()
     my_data = data[dataset]
 
     all_performances = []
     for method, performances in my_data.items():
         all_performances = all_performances + performances
 
+    min_v = min(all_performances)
+    max_v = max(all_performances)
+    scaler = MinMaxScaler(feature_range=(floor(min_v), ceil(max_v)))
     scaler.fit(np.array(all_performances).reshape(-1, 1))
 
     return scaler
@@ -113,11 +119,12 @@ plt.plot(xnew, power_smooth_t, linestyle='-', color='green')
 plt.plot(xnew, power_smooth_ex, linestyle='-', color='blue')
 plt.plot(xnew, power_smooth_s, linestyle='-', color='red')
 
-plt.xticks(np.arange(1, 6, step=1))
+# plt.xticks(np.arange(1, 6, step=1))
+plt.xticks(np.arange(1, 6, step=1), ['t+1', 't+3', 't+5', 't+7', 't+9'])
 # plt.plot(xnew, power_smooth, linestyle='-', marker='o', color='#8ebad9')
 
 # plt.legend(['Using weather'], loc='upper right')
-ax.set_ylabel('RMSE Coefficient')
+ax.set_ylabel('RMSE')
 ax.set_xlabel('Horizon')
 ax.legend(['RNN-GRU', 'Dilated CNN', 'Seq2seq', 'Self-boosted'], loc='upper left')
 
