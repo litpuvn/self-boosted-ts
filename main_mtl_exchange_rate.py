@@ -21,7 +21,7 @@ import os
 if __name__ == '__main__':
 
     time_step_lag = 6
-    HORIZON = 3
+    HORIZON = 1
 
     imfs_count = 11
 
@@ -100,7 +100,7 @@ if __name__ == '__main__':
 
     # LATENT_DIM = 5
     BATCH_SIZE = 32
-    EPOCHS = 100
+    EPOCHS = 30
 
     model = create_model_mtl_mtv_exchange_rate(horizon=HORIZON, nb_train_samples=len(X_train),
                                  batch_size=32, feature_count=len(features), lag_time=time_step_lag,

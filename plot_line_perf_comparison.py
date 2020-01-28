@@ -29,37 +29,31 @@ data = {
     },
 
     'temperature': {
-        'RNN-GRU': [126.27993660120123, 103.44295836003958, 96.13352645214277, 96.33634984390224, 102.19951055894728,
-                        92.28384003569212, 93.03786696703503, 92.59590053266247, 93.93262426378193, 92.61991129328025,
-                        91.55383227856858, 85.96056269611333],
+        'RNN-GRU': [2.3407691270584845, 5.248765748048668, 9.568963430446352, 11.648340563227174, 13.26482067920708],
 
-        'D-CNN': [2.2497826994122776, 1.8967160863507884, 1.7185949667947846, 1.3502297782362, 1.3672734843484213,
-                        1.69977688190889, 1.9854489919369387, 3.0239465816163285, 3.518981975370067, 4.86662707737258,
-                        3.471324563701506],
+        'D-CNN': [2.3858100872418793, 6.324139982298024,  7.465282186813688, 10.299251267859812, 9.879950804658082],
 
-        'Seq2seq': [0.007529017005649577, 0.007328292588766152, 0.006986319846778477, 0.007398312227230334,
-                          0.010132788473359567, 0.00919169121037186, 0.008189049546508244, 0.00816905158546414,
-                          0.009940578222472672, 0.006962016885383331]
+        'Seq2seq': [3.078082957441617, 5.835212628033374, 8.25892000381356, 12.313987901193574, 13.943391468327604],
+        'Self-boosted': [1.9635752147334289, 4.744039810925183, 4.612209257297993, 9.939097269454377, 10.98874109033954]
+
     },
 
     'exchange_rate': {
-        'RNN-GRU': [126.27993660120123, 103.44295836003958, 96.13352645214277, 96.33634984390224, 102.19951055894728,
-                    92.28384003569212, 93.03786696703503, 92.59590053266247, 93.93262426378193, 92.61991129328025,
-                    91.55383227856858, 85.96056269611333],
+        'RNN-GRU': [0.020143499292947852, 0.019995787975780437, 0.022305923520380123, 0.02386032910068699, 0.03157796204146639],
 
-        'D-CNN': [2.2497826994122776, 1.8967160863507884, 1.7185949667947846, 1.3502297782362, 1.3672734843484213,
-                  1.69977688190889, 1.9854489919369387, 3.0239465816163285, 3.518981975370067, 4.86662707737258,
-                  3.471324563701506],
+        'D-CNN': [0.008610779318178993, 0.011119592430211326, 0.0113448794715377,  0.012545521873342846, 0.016862703348188804],
 
-        'Seq2seq': [0.007529017005649577, 0.007328292588766152, 0.006986319846778477, 0.007398312227230334,
-                    0.010132788473359567, 0.00919169121037186, 0.008189049546508244, 0.00816905158546414,
-                    0.009940578222472672, 0.006962016885383331]
+        'Seq2seq': [0.02678391863863919, 0.035478865140097106, 0.03656039271160496, 0.03009078860016039, 0.03492806623968887],
+        'Self-boosted': [0.0068517864378336004, 0.008769284833771972, 0.00907317391521684, 0.010189584351223335, 0.010705994501009104]
+
     },
 
 
 }
 
-dataset = 'electricity'
+# dataset = 'temperature'
+# dataset = 'electricity'
+dataset = 'exchange_rate'
 
 def create_scaler():
     global dataset
@@ -73,7 +67,14 @@ def create_scaler():
 
     min_v = min(all_performances)
     max_v = max(all_performances)
-    scaler = MinMaxScaler(feature_range=(floor(min_v), ceil(max_v)))
+    lower = floor(min_v)
+    upper = ceil(max_v)
+
+    if max_v < 1:
+        upper = max_v
+        lower = min_v
+
+    scaler = MinMaxScaler(feature_range=(lower, upper))
     scaler.fit(np.array(all_performances).reshape(-1, 1))
 
     return scaler
@@ -98,25 +99,25 @@ def create_data_line(data_source, scaler):
         index = index + 1
 
     plot_data = scaler.transform(np.array(plot_data).reshape(-1, 1))
-    spl = make_interp_spline(Points, plot_data, k=3)  # type: BSpline
-    xnew = np.linspace(min(Points), max(Points), 100)
+    spl = make_interp_spline(Points, plot_data, k=1)  # type: BSpline
+    xnew = np.linspace(min(Points), max(Points), 30)
     power_smooth = spl(xnew)
 
     return xnew, power_smooth
 
 
 scaler = create_scaler()
-xnew, power_smooth_ex = create_data_line('RNN-GRU', scaler=scaler)
-_, power_smooth_e = create_data_line('D-CNN', scaler=scaler)
-_, power_smooth_t = create_data_line('Seq2seq', scaler=scaler)
+xnew, power_smooth_rnn = create_data_line('RNN-GRU', scaler=scaler)
+_, power_smooth_cnn = create_data_line('D-CNN', scaler=scaler)
+_, power_smooth_seq2seq = create_data_line('Seq2seq', scaler=scaler)
 _, power_smooth_s = create_data_line('Self-boosted', scaler=scaler)
 
 # plt.plot(plot_data, linestyle='-', marker='o', color='#8ebad9')
 
 
-plt.plot(xnew, power_smooth_e, linestyle='-', color='purple')
-plt.plot(xnew, power_smooth_t, linestyle='-', color='green')
-plt.plot(xnew, power_smooth_ex, linestyle='-', color='blue')
+plt.plot(xnew, power_smooth_rnn, linestyle='-', color='purple')
+plt.plot(xnew, power_smooth_cnn, linestyle='-', color='green')
+plt.plot(xnew, power_smooth_seq2seq, linestyle='-', color='blue')
 plt.plot(xnew, power_smooth_s, linestyle='-', color='red')
 
 # plt.xticks(np.arange(1, 6, step=1))

@@ -1,5 +1,6 @@
 from keras.callbacks import EarlyStopping
 import pandas as pd
+from keras.layers.pooling import MaxPooling1D
 from pandas import DatetimeIndex
 
 from common.TimeseriesTensor import TimeSeriesTensor
@@ -61,26 +62,28 @@ if __name__ == '__main__':
     KERNEL_SIZE = 3
 
     BATCH_SIZE = 32
-    EPOCHS = 100
+    EPOCHS = 30
 
     model = Sequential()
     # conv = Conv1D(kernel_size=3, filters=5, activation='relu')(x)
 
     model.add(
-        Conv1D(LATENT_DIM, kernel_size=KERNEL_SIZE, padding='causal', strides=1, activation='relu', dilation_rate=1,
-               input_shape=(time_step_lag, 1)))
+        Conv1D(filters=5, kernel_size=KERNEL_SIZE, padding='causal', activation='relu', dilation_rate=1, input_shape=(time_step_lag, 1)))
     model.add(
-        Conv1D(LATENT_DIM, kernel_size=KERNEL_SIZE, padding='causal', strides=1, activation='relu', dilation_rate=2))
+        Conv1D(filters=5, kernel_size=KERNEL_SIZE, padding='causal', strides=1, activation='relu', dilation_rate=2))
     model.add(
-        Conv1D(LATENT_DIM, kernel_size=KERNEL_SIZE, padding='causal', strides=1, activation='relu', dilation_rate=4))
+        Conv1D(filters=5, kernel_size=KERNEL_SIZE, padding='causal', strides=1, activation='relu', dilation_rate=4))
+
+    model.add(MaxPooling1D(pool_size=1))
+
     model.add(Flatten())
     model.add(Dense(1, activation='linear'))
 
     model.summary()
 
-    model.compile(optimizer='Adam', loss='mse', metrics=['mae', 'mape', 'mse'])
+    model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'mse'])
 
-    earlystop = EarlyStopping(monitor='val_mse', patience=5)
+    earlystop = EarlyStopping(monitor='val_loss', patience=5)
     history = model.fit(X_train,
                         y_train,
                         batch_size=BATCH_SIZE,

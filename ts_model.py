@@ -463,7 +463,7 @@ def create_model_mtl_mtv_exchange_rate(horizon=1, nb_train_samples=512, batch_si
     x = Input(shape=(lag_time, feature_count), name="input_layer")
     conv = Conv1D(filters=5, kernel_size=1, activation='relu')(x)
     # conv = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(x)
-    # conv = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv)
+    conv = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv)
 
     mp = MaxPooling1D(pool_size=1)(conv)
     # conv2 = Conv1D(filters=5, kernel_size=3, activation='relu')(mp)
@@ -471,6 +471,7 @@ def create_model_mtl_mtv_exchange_rate(horizon=1, nb_train_samples=512, batch_si
 
     lstm1 = GRU(8, return_sequences=True)(mp)
     lstm2 = GRU(16, return_sequences=True)(lstm1)
+    # lstm2 = GRU(16, return_sequences=True)(mp)
 
     shared_dense = Dense(32, name="shared_layer")(lstm2)
 
@@ -508,7 +509,7 @@ def create_model_mtl_mtv_exchange_rate(horizon=1, nb_train_samples=512, batch_si
     model = KerasModel(inputs=[x, auxiliary_input], outputs=outputs)
 
 
-    model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'mse'], loss_weights=[0.5, 0.005, 0.005, 0.005, 0.005])
+    model.compile(optimizer='sgd', loss='mse', metrics=['mae', 'mape', 'mse'], loss_weights=[1, 0.00, 0.00, 0.00, 0.00])
     # Callbacks
     # callbacks = [EarlyStopping(monitor='val_mse', patience=10)]
 
