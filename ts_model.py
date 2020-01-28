@@ -461,18 +461,18 @@ def create_model_mtv_exchange_rate(horizon=1, nb_train_samples=512, batch_size=3
 def create_model_mtl_mtv_exchange_rate(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=6, lag_time=6, aux_feature_count=8):
 
     x = Input(shape=(lag_time, feature_count), name="input_layer")
-    # conv = Conv1D(filters=5, kernel_size=1, activation='relu')(x)
-    conv = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(x)
+    conv = Conv1D(filters=5, kernel_size=1, activation='relu')(x)
+    # conv = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(x)
     # conv = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv)
 
     mp = MaxPooling1D(pool_size=1)(conv)
     # conv2 = Conv1D(filters=5, kernel_size=3, activation='relu')(mp)
     # mp = MaxPooling1D(pool_size=2)(conv2)
 
-    lstm1 = GRU(16, return_sequences=True)(mp)
-    lstm2 = GRU(32, return_sequences=True)(lstm1)
+    lstm1 = GRU(8, return_sequences=True)(mp)
+    lstm2 = GRU(16, return_sequences=True)(lstm1)
 
-    shared_dense = Dense(64, name="shared_layer")(lstm2)
+    shared_dense = Dense(32, name="shared_layer")(lstm2)
 
     ## sub1 is main task; units = reshape dimension multiplication
     sub1 = GRU(units=(lag_time*aux_feature_count), name="task1")(shared_dense)
