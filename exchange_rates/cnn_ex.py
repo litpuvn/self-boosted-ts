@@ -19,13 +19,13 @@ def RMSE(x):
 
 if __name__ == '__main__':
 
-    time_step_lag = 1
-    HORIZON = 1
+    time_step_lag = 6
+    HORIZON = 9
 
     imfs_count = 0 # set equal to zero for not considering IMFs features
 
-    data_dir = '/home/ope/Documents/Projects/self-boosted-ts/data/'
-    output_dir = '/home/ope/Documents/Projects/self-boosted-ts/output/exchange-rate'
+    data_dir = '/home/long/TTU-SOURCES/self-boosted-ts/data'
+    output_dir = '/home/long/TTU-SOURCES/self-boosted-ts/output/exchange-rate'
     #
     multi_time_series = load_data_full(data_dir, datasource='exchange-rate', imfs_count=imfs_count, freq='d')
     print(multi_time_series.head())
@@ -37,7 +37,8 @@ if __name__ == '__main__':
 
     train_inputs, valid_inputs, test_inputs, y_scaler = split_train_validation_test(multi_time_series, valid_start_time=valid_start_dt, test_start_time=test_start_dt,
                                                                                     time_step_lag=time_step_lag, horizon=HORIZON,
-                                                                                    features=["load"], target='load',
+                                                                                    features=["load"],
+                                                                                    target=['load'],
                                                                                     time_format='%Y-%m-%d',
                                                                                     freq='d'
 
@@ -57,7 +58,7 @@ if __name__ == '__main__':
     from keras.callbacks import EarlyStopping, ModelCheckpoint
 
     LATENT_DIM = 5
-    KERNEL_SIZE = 2
+    KERNEL_SIZE = 3
 
     BATCH_SIZE = 32
     EPOCHS = 100
@@ -73,7 +74,7 @@ if __name__ == '__main__':
     model.add(
         Conv1D(LATENT_DIM, kernel_size=KERNEL_SIZE, padding='causal', strides=1, activation='relu', dilation_rate=4))
     model.add(Flatten())
-    model.add(Dense(HORIZON, activation='linear'))
+    model.add(Dense(1, activation='linear'))
 
     model.summary()
 
@@ -109,4 +110,6 @@ if __name__ == '__main__':
 
     mape_v = mape(y1_preds.reshape(-1, 1), y1_test.reshape(-1, 1))
 
-    print("mse:", mse, 'rmse_predict:', rmse_predict, "mae:", mae, "mape:", mape_v, "r2:", r_square, "msle:", msle, "meae:", meae, "evs:", evs)
+    # print("mse:", mse, 'rmse_predict:', rmse_predict, "mae:", mae, "mape:", mape_v, "r2:", r_square, "msle:", msle, "meae:", meae, "evs:", evs)
+    print('rmse_predict:', rmse_predict, "evs:", evs, "mae:", mae,
+          "mse:", mse, "meae:", meae, "r2:", r_square, "mape", mape_v)
