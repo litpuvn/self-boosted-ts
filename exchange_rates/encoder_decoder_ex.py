@@ -21,13 +21,13 @@ def RMSE(x):
     return sqrt(x)
 
 if __name__ == '__main__':
-    time_step_lag = 1
-    HORIZON = 1
+    time_step_lag = 6
+    HORIZON = 7
 
     imfs_count = 0 # set equal to zero for not considering IMFs features
 
-    data_dir = '/home/ope/Documents/Projects/self-boosted-ts/data/'
-    output_dir = '/home/ope/Documents/Projects/self-boosted-ts/output/exchange-rate'
+    data_dir = '/home/long/TTU-SOURCES/self-boosted-ts/data'
+    output_dir = '/home/long/TTU-SOURCES/self-boosted-ts/output/exchange-rate'
     #
     multi_time_series = load_data_full(data_dir, datasource='exchange-rate', imfs_count=imfs_count, freq='d')
     print(multi_time_series.head())
@@ -42,7 +42,8 @@ if __name__ == '__main__':
                                                                                     test_start_time=test_start_dt,
                                                                                     time_step_lag=time_step_lag,
                                                                                     horizon=HORIZON,
-                                                                                    features=["load"], target='load',
+                                                                                    features=["load"],
+                                                                                    target=['load'],
                                                                                     time_format='%Y-%m-%d',
                                                                                     freq='d')
 
@@ -71,12 +72,12 @@ if __name__ == '__main__':
 
     model = Sequential()
     model.add(GRU(LATENT_DIM, input_shape=(time_step_lag, 1)))
-    model.add(RepeatVector(HORIZON))
+    model.add(RepeatVector(1))
     model.add(GRU(LATENT_DIM, return_sequences=True))
     model.add(TimeDistributed(Dense(1)))
     model.add(Flatten())
 
-    model.compile(optimizer='RMSprop', loss='mse')
+    model.compile(optimizer='adam', loss='mse')
     model.summary()
 
 
@@ -110,7 +111,9 @@ if __name__ == '__main__':
     r_square = r2_score(y1_test, y1_preds)
     mape_v = mape(y1_preds.reshape(-1, 1), y1_test.reshape(-1, 1))
 
-    print("mse:", mse, 'rmse_predict:', rmse_predict, "mae:", mae, "mape:", mape_v, "r2:", r_square, "msle:", msle, "meae:", meae, "evs:", evs)
+    # print("mse:", mse, 'rmse_predict:', rmse_predict, "mae:", mae, "mape:", mape_v, "r2:", r_square, "msle:", msle, "meae:", meae, "evs:", evs)
 
     # c_mape = mape(y1_test, y1_preds)
     # print("mape:", c_mape)
+    print('rmse_predict:', rmse_predict, "evs:", evs, "mae:", mae,
+          "mse:", mse, "meae:", meae, "r2:", r_square, "mape", mape_v)
