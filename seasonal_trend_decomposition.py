@@ -27,7 +27,7 @@ file_configs = [
     },
 ]
 
-def convert_to_seaonal(config, show_graph=False, model='additive'):
+def convert_to_seaonal(config, save=False, show_graph=False, model='additive'):
     filepath = config['path']
     start = config['start']
     freq = config['freq']
@@ -52,7 +52,10 @@ def convert_to_seaonal(config, show_graph=False, model='additive'):
 
     horizontal_stack = pd.concat([observed, resid, seasonal, trend], axis=1, ignore_index=True)
     horizontal_stack.columns = ['Observed', 'Residual', 'Seasonal', 'Trend']
-    horizontal_stack.to_csv(folder + '/' + model + '_' + output, index=False)
+    if save == True:
+        horizontal_stack.to_csv(folder + '/' + model + '_' + output, index=True)
+    else:
+        print(horizontal_stack.head(5))
 
     if show_graph == True:
         result.plot()
@@ -60,5 +63,5 @@ def convert_to_seaonal(config, show_graph=False, model='additive'):
 
 
 for config in file_configs:
-    convert_to_seaonal(config=config, show_graph=False, model='additive')
-    convert_to_seaonal(config=config, show_graph=False, model='multiplicative')
+    convert_to_seaonal(config=config, save=True, show_graph=False, model='additive')
+    convert_to_seaonal(config=config, save=True, show_graph=False, model='multiplicative')
