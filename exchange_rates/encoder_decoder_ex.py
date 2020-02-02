@@ -22,7 +22,7 @@ def RMSE(x):
 
 if __name__ == '__main__':
     time_step_lag = 6
-    HORIZON = 7
+    HORIZON = 5
 
     imfs_count = 0 # set equal to zero for not considering IMFs features
 
@@ -77,11 +77,11 @@ if __name__ == '__main__':
     model.add(TimeDistributed(Dense(1)))
     model.add(Flatten())
 
-    model.compile(optimizer='adam', loss='mse')
+    model.compile(optimizer='rmsprop', loss='mse')
     model.summary()
 
 
-    earlystop = EarlyStopping(monitor='val_mse', patience=5)
+    earlystop = EarlyStopping(monitor='val_loss', patience=5)
     history = model.fit(X_train,
                         y_train,
               batch_size=BATCH_SIZE,
