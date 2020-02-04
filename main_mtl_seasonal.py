@@ -21,12 +21,15 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    HORIZON = 1
+    HORIZON = 7
+    EPOCHS = 30
 
     time_step_lag = 6
-    # HORIZON = 3
 
-    datasource = 'electricity'
+    # datasource = 'electricity'
+    # datasource = 'temperature'
+    datasource = 'exchange-rate'
+    # mode = 'additive'
     mode = 'multiplicative'
 
     data_dir = 'data/seasonal'
@@ -35,12 +38,15 @@ if __name__ == '__main__':
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(output_dir + '/model_checkpoint', exist_ok=True)
 
-    multi_time_series, valid_start_dt, test_start_dt = load_seasonal_data(data_dir, datasource=datasource, mode=mode)
+    multi_time_series, valid_start_dt, test_start_dt, freq = load_seasonal_data(data_dir, datasource=datasource, mode=mode)
     print(multi_time_series.head())
 
-    # features = ["load", "imf0", "imf1", "imf4", "imf5", "imf6", "imf7", "imf8", "imf9", "imf10", "imf11", "imf12"]
     features = ["load", "Residual", "Seasonal", "Trend"]
     targets = ["load", "Residual", "Seasonal", "Trend"]
+
+    time_format='%Y-%m-%d %H:%M:%S'
+    if freq == 'd':
+        time_format = '%Y-%m-%d'
 
     train_inputs, valid_inputs, test_inputs, y_scaler = split_train_validation_test(multi_time_series,
                                                      valid_start_time=valid_start_dt,
@@ -49,7 +55,8 @@ if __name__ == '__main__':
                                                      horizon=HORIZON,
                                                      features=features,
                                                      target=targets,
-                                                     freq='H'
+                                                     freq=freq,
+                                                     time_format=time_format
                                                      )
 
 
@@ -76,7 +83,6 @@ if __name__ == '__main__':
     # LATENT_DIM = 5
     BATCH_SIZE = 32
     # EPOCHS = 50
-    EPOCHS = 20
     # EPOCHS = 5
 
 
