@@ -52,6 +52,28 @@ def load_data(data_dir):
     return df
 
 
+def load_seasonal_data(data_dir, datasource='electricity', mode='additive'):
+    df = None
+    valid_start_dt = None
+    test_start_dt = None
+
+    if datasource == 'electricity':
+        df = pd.read_csv(os.path.join(data_dir, mode + "_seasonal_electricity.csv"), sep=',', header=0, index_col=0, parse_dates=True)
+        valid_start_dt = '2013-05-26 14:15:00'
+        test_start_dt = '2014-03-14 19:15:00'
+
+    elif datasource == 'temperature':
+        df = pd.read_csv(os.path.join(data_dir, mode + "_seasonal_temperature.csv"), sep=',', header=0, index_col=0, parse_dates=True)
+
+    elif datasource == 'exchange-rate':
+        df = pd.read_csv(os.path.join(data_dir, mode + "_seasonal_exchange_rate.csv"), sep=',', header=0, index_col=0, parse_dates=True)
+    else:
+        raise Exception('Not support the data source:', datasource)
+
+    df.rename(columns={'Observed': 'load'}, inplace=True)
+
+    return df, valid_start_dt, test_start_dt
+
 def load_data_full(data_dir, datasource='electricity', imfs_count=13, freq='H'):
     """Load the GEFCom 2014 energy load data"""
     target =None
