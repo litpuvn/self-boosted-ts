@@ -23,7 +23,8 @@ if __name__ == '__main__':
 
     time_step_lag = 6
     # HORIZON = 3
-    HORIZON = 1
+    HORIZON = 5
+    EPOCHS = 50
 
     imfs_count = 13
 
@@ -98,13 +99,12 @@ if __name__ == '__main__':
     # LATENT_DIM = 5
     BATCH_SIZE = 32
     # EPOCHS = 50
-    EPOCHS = 20
     # EPOCHS = 5
 
     model = create_model_mtl_mtv_electricity(horizon=HORIZON, nb_train_samples=len(X_train),
                                  batch_size=32, feature_count=len(features), lag_time=time_step_lag,
                                              auxiliary_feature_count=len(aux_features))
-    earlystop = EarlyStopping(monitor='val_mse', patience=10)
+    earlystop = EarlyStopping(monitor='val_loss', patience=10)
 
     file_path = output_dir + '/model_checkpoint/weights-improvement-{epoch:02d}.hdf5'
     check_point = ModelCheckpoint(file_path, monitor='val_loss', verbose=0, save_best_only=True,

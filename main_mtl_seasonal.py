@@ -21,16 +21,16 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    HORIZON = 7
+    HORIZON = 9
     EPOCHS = 30
 
     time_step_lag = 6
 
-    # datasource = 'electricity'
+    datasource = 'electricity'
     # datasource = 'temperature'
-    datasource = 'exchange-rate'
-    # mode = 'additive'
-    mode = 'multiplicative'
+    # datasource = 'exchange-rate'
+    mode = 'additive'
+    # mode = 'multiplicative'
 
     data_dir = 'data/seasonal'
     output_dir = 'output/seasonal/' + datasource + '/mtl_mtv/horizon_' + str(HORIZON) + '/lag' + str(time_step_lag)
