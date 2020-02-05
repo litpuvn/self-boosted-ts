@@ -179,6 +179,7 @@ def create_model_mtl_mtv_electricity(horizon=1, nb_train_samples=512, batch_size
 
 
     lstm1 = GRU(16, return_sequences=True)(mp)
+    # lstm2 = GRU(32, return_sequences=True)(mp)
     lstm2 = GRU(32, return_sequences=True)(lstm1)
 
     shared_dense = Dense(64, name="shared_layer")(lstm2)
@@ -324,6 +325,7 @@ def create_model_mtl_mtv_temperature(horizon=1, nb_train_samples=512, batch_size
 
     lstm1 = GRU(16, return_sequences=True)(mp)
     lstm2 = GRU(32, return_sequences=True)(lstm1)
+    # lstm2 = GRU(32, return_sequences=True)(mp)
 
     shared_dense = Dense(64, name="shared_layer")(lstm2)
 
@@ -356,7 +358,7 @@ def create_model_mtl_mtv_temperature(horizon=1, nb_train_samples=512, batch_size
     model = KerasModel(inputs=[x, auxiliary_input], outputs=outputs)
 
 
-    model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'mse'], loss_weights=[0.5, 0.01, 0.01, 0.01])
+    model.compile(optimizer='sgd', loss='mse', metrics=['mae', 'mape', 'mse'], loss_weights=[0.5, 0.01, 0.01, 0.01])
     # model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mape', 'mse'])
     # model.compile(optimizer='SGD', loss='mse', metrics=['mae', 'mape', 'mse'])
     # Callbacks
@@ -521,9 +523,10 @@ def create_model_mtl_mtv_exchange_rate(horizon=1, nb_train_samples=512, batch_si
 def create_seasonal_model_mtl(horizon=1, nb_train_samples=512, batch_size=32,  feature_count=11, time_lag=6):
 
     x = Input(shape=(time_lag, feature_count), name="input_layer")
-    # conv = Conv1D(filters=5, kernel_size=1, activation='relu')(x)
-    conv = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(x)
-    # conv = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv)
+    conv = Conv1D(filters=5, kernel_size=1, activation='relu')(x)
+    # conv = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(x)
+    conv = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=2)(conv)
+    conv = Conv1D(filters=5, kernel_size=3, padding='causal', strides=1, activation='relu', dilation_rate=4)(conv)
 
     mp = MaxPooling1D(pool_size=1)(conv)
     # conv2 = Conv1D(filters=5, kernel_size=3, activation='relu')(mp)
