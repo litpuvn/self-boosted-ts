@@ -1,0 +1,58 @@
+seasonal=false
+
+/usr/bin/python3.6 /home/long/TTU-SOURCES/self-boosted-ts/electricity/auto_arima.py
+/usr/local/lib/python3.6/dist-packages/statsmodels/regression/linear_model.py:1784: RuntimeWarning: invalid value encountered in sqrt
+  return np.sqrt(np.diag(self.cov_params()))
+Fit ARIMA: order=(1, 0, 1) seasonal_order=(0, 0, 0, 0); AIC=456810.528, BIC=456844.387, Fit time=16.271 seconds
+Fit ARIMA: order=(0, 0, 0) seasonal_order=(0, 0, 0, 0); AIC=569323.601, BIC=569340.531, Fit time=0.630 seconds
+Fit ARIMA: order=(1, 0, 0) seasonal_order=(0, 0, 0, 0); AIC=486021.572, BIC=486046.967, Fit time=0.782 seconds
+/usr/local/lib/python3.6/dist-packages/statsmodels/tsa/statespace/sarimax.py:975: UserWarning: Non-invertible starting MA parameters found. Using zeros as starting parameters.
+  warn('Non-invertible starting MA parameters found.'
+Fit ARIMA: order=(0, 0, 1) seasonal_order=(0, 0, 0, 0); AIC=524998.595, BIC=525023.990, Fit time=7.943 seconds
+Fit ARIMA: order=(0, 0, 0) seasonal_order=(0, 0, 0, 0); AIC=569321.601, BIC=569330.066, Fit time=0.259 seconds
+Fit ARIMA: order=(2, 0, 1) seasonal_order=(0, 0, 0, 0); AIC=438327.703, BIC=438370.028, Fit time=10.386 seconds
+Fit ARIMA: order=(2, 0, 0) seasonal_order=(0, 0, 0, 0); AIC=438634.184, BIC=438668.044, Fit time=1.094 seconds
+Fit ARIMA: order=(3, 0, 1) seasonal_order=(0, 0, 0, 0); AIC=437097.974, BIC=437148.764, Fit time=18.961 seconds
+Fit ARIMA: order=(3, 0, 0) seasonal_order=(0, 0, 0, 0); AIC=438557.585, BIC=438599.910, Fit time=2.048 seconds
+Fit ARIMA: order=(4, 0, 1) seasonal_order=(0, 0, 0, 0); AIC=425014.733, BIC=425073.987, Fit time=57.638 seconds
+Near non-invertible roots for order (4, 0, 1)(0, 0, 0, 0); setting score to inf (at least one inverse root too close to the border of the unit circle: 1.000)
+Fit ARIMA: order=(3, 0, 2) seasonal_order=(0, 0, 0, 0); AIC=425530.032, BIC=425589.287, Fit time=41.922 seconds
+Near non-invertible roots for order (3, 0, 2)(0, 0, 0, 0); setting score to inf (at least one inverse root too close to the border of the unit circle: 1.000)
+/usr/local/lib/python3.6/dist-packages/statsmodels/base/model.py:568: ConvergenceWarning: Maximum Likelihood optimization failed to converge. Check mle_retvals
+  "Check mle_retvals", ConvergenceWarning)
+Fit ARIMA: order=(2, 0, 2) seasonal_order=(0, 0, 0, 0); AIC=425201.075, BIC=425251.865, Fit time=42.036 seconds
+Near non-invertible roots for order (2, 0, 2)(0, 0, 0, 0); setting score to inf (at least one inverse root too close to the border of the unit circle: 1.000)
+Fit ARIMA: order=(4, 0, 0) seasonal_order=(0, 0, 0, 0); AIC=434261.387, BIC=434312.177, Fit time=3.761 seconds
+Fit ARIMA: order=(5, 0, 1) seasonal_order=(0, 0, 0, 0); AIC=434261.360, BIC=434329.080, Fit time=24.021 seconds
+Fit ARIMA: order=(5, 0, 0) seasonal_order=(0, 0, 0, 0); AIC=434177.577, BIC=434236.831, Fit time=5.757 seconds
+Total fit time: 233.571 seconds
+                               SARIMAX Results
+==============================================================================
+Dep. Variable:                      y   No. Observations:                35065
+Model:               SARIMAX(4, 0, 1)   Log Likelihood             -212500.366
+Date:                Thu, 06 Feb 2020   AIC                         425014.733
+Time:                        21:07:58   BIC                         425073.987
+Sample:                             0   HQIC                        425033.605
+                              - 35065
+Covariance Type:                  opg
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+intercept  -1.835e-06      0.000     -0.012      0.991      -0.000       0.000
+ar.L1          2.5118      0.006    387.879      0.000       2.499       2.524
+ar.L2         -2.4917      0.016   -159.790      0.000      -2.522      -2.461
+ar.L3          1.2907      0.017     75.987      0.000       1.257       1.324
+ar.L4         -0.3668      0.008    -48.182      0.000      -0.382      -0.352
+ma.L1         -0.9999      0.008   -124.501      0.000      -1.016      -0.984
+sigma2      1.075e+04    123.109     87.296      0.000    1.05e+04     1.1e+04
+===================================================================================
+Ljung-Box (Q):                    70050.41   Jarque-Bera (JB):             18520.62
+Prob(Q):                              0.00   Prob(JB):                         0.00
+Heteroskedasticity (H):               1.00   Skew:                             1.19
+Prob(H) (two-sided):                  1.00   Kurtosis:                         5.65
+===================================================================================
+
+Warnings:
+[1] Covariance matrix calculated using the outer product of gradients (complex-step).
+
+Process finished with exit code 0
