@@ -24,7 +24,8 @@ def RMSE(x):
 
 if __name__ == '__main__':
     time_step_lag = 12
-    HORIZON = 9
+    HORIZON = 1
+    EPOCHS = 50
 
     imfs_count = 0 # set equal to zero for not considering IMFs features
 
@@ -68,7 +69,6 @@ if __name__ == '__main__':
 
     LATENT_DIM = 5
     BATCH_SIZE = 32
-    EPOCHS = 100
 
     model = Sequential()
     model.add(GRU(LATENT_DIM, input_shape=(time_step_lag, 1)))

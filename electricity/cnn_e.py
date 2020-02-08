@@ -28,9 +28,10 @@ def RMSE(x):
 if __name__ == '__main__':
 
 
-    time_step_lag = 12
+    time_step_lag = 3
 
-    HORIZON = 5
+    HORIZON = 1
+    EPOCHS = 50
 
     imfs_count = 0 # set equal to zero for not considering IMFs features
 
@@ -87,7 +88,6 @@ if __name__ == '__main__':
     KERNEL_SIZE = 2
 
     BATCH_SIZE = 32
-    EPOCHS = 100
 
     model = Sequential()
     # conv = Conv1D(kernel_size=3, filters=5, activation='relu')(x)
@@ -130,7 +130,7 @@ if __name__ == '__main__':
     rmse_predict = RMSE(mse)
     evs = explained_variance_score(y1_test, y1_preds)
     mae = mean_absolute_error(y1_test, y1_preds)
-    msle = mean_squared_log_error(y1_test, y1_preds)
+    # msle = mean_squared_log_error(y1_test, y1_preds)
     meae = median_absolute_error(y1_test, y1_preds)
     r_square = r2_score(y1_test, y1_preds)
 

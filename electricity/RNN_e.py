@@ -50,8 +50,8 @@ def RMSE(x):
     return sqrt(x)
 
 if __name__ == '__main__':
-    time_step_lag = 6
-    HORIZON = 9
+    time_step_lag = 12
+    HORIZON = 1
 
     imfs_count = 0 # set equal to zero for not considering IMFs features
 
@@ -97,7 +97,7 @@ if __name__ == '__main__':
 
     LATENT_DIM = 5
     BATCH_SIZE = 32
-    EPOCHS = 100
+    EPOCHS = 50
 
     model = Sequential()
     model.add(GRU(LATENT_DIM, input_shape=(time_step_lag, 1)))
@@ -105,7 +105,7 @@ if __name__ == '__main__':
     model.compile(optimizer='RMSprop', loss='mse')
     model.summary()
 
-    earlystop = EarlyStopping(monitor='val_mse', patience=5)
+    earlystop = EarlyStopping(monitor='val_loss', patience=5)
     history = model.fit(X_train,
                         y_train,
                         batch_size=BATCH_SIZE,

@@ -28,10 +28,10 @@ def RMSE(x):
 if __name__ == '__main__':
 
 
-    time_step_lag = 3
+    time_step_lag = 6
 
     EPOCHS = 50
-    HORIZON = 1
+    HORIZON = 9
     datasource = 'electricity'
     # datasource = 'temperature'
     # datasource = 'exchange-rate'
@@ -39,8 +39,8 @@ if __name__ == '__main__':
     # mode = 'multiplicative'
     # predict_component = 'Residual'
     # predict_component = 'Trend'
-    # predict_component = 'Seasonal'
-    predict_component = 'Observed'
+    predict_component = 'Seasonal'
+    # predict_component = 'Observed'
 
     data_dir = '/home/long/TTU-SOURCES/self-boosted-ts/data/seasonal'
     output_dir = '/home/long/TTU-SOURCES/self-boosted-ts/output/electricity/dwt/cnn'
@@ -114,9 +114,9 @@ if __name__ == '__main__':
     y1_test = test_inputs['target_load']
     y1_test = y_scaler.inverse_transform(y1_test)
 
-    if not os.path.exists(output_dir + '/original_' + predict_component + '_lag' + str(time_step_lag) + '.csv'):
-        np.savetxt(output_dir + '/original_' + predict_component + '_lag' + str(time_step_lag) + '.csv', y1_test,
-                   delimiter=',', fmt='%s')
+    original_test_file = output_dir + '/original_' + predict_component + '_lag' + str(time_step_lag) + '_h' + str(HORIZON) + '.csv'
+    if not os.path.exists(original_test_file):
+        np.savetxt(original_test_file, y1_test, delimiter=',', fmt='%s')
 
     if predict_component == 'Observed':
         exit(0)

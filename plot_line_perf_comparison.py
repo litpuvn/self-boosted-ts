@@ -23,26 +23,26 @@ data = {
         'RNN-GRU': [131.02334625983568, 266.4695441675886, 398.88785200608567, 435.4095048978169, 454.6632587708118],
 
         'D-CNN': [109.44010834832092, 206.5636915277131, 289.75570778428374, 283.4357061541986, 287.71427396919216],
-
+        'Dwt-CNN': [97.4610812842055, ],
         'Seq2seq': [108.98431461787577, 191.61387997977397, 263.9694248835031, 281.30287590431044, 294.9900816084042],
-        'Self-boosted': [80.7800216098457, 125.884031056754, 166.07100229556073, 187.81365138799708, 178.61930042880613]
+        'Self-boosted': [80.7800216098457, 113.76110531783974, 152.59680725743004, 166.8524359051895, 172.76464795213244]
+
     },
 
     'temperature': {
-        'RNN-GRU': [2.3407691270584845, 5.248765748048668, 9.568963430446352, 11.648340563227174, 13.26482067920708],
+        'RNN-GRU': [1.7469, 5.248765748048668, 9.568963430446352, 11.648340563227174, 13.26482067920708],
 
         'D-CNN': [2.3858100872418793, 6.324139982298024,  7.465282186813688, 10.299251267859812, 10.98874109033954],
-
+        'Dwt-CNN': [1.43366465551339, ],
         'Seq2seq': [3.078082957441617, 5.835212628033374, 8.25892000381356, 12.313987901193574, 13.943391468327604],
-        'Self-boosted': [1.9635752147334289, 4.744039810925183, 4.612209257297993, 9.939097269454377, 9.879950804658082]
+        'Self-boosted': [1.8640028533970154, 2.9676957788976264 , 3.8451002506918583, 4.03406402512719, 5.586341553019636]
 
     },
 
     'exchange_rate': {
-        'RNN-GRU': [0.020143499292947852, 0.019995787975780437, 0.022305923520380123, 0.02386032910068699, 0.03157796204146639],
-
+        'RNN-GRU': [0.0106, 0.019995787975780437, 0.022305923520380123, 0.02386032910068699, 0.03157796204146639],
         'D-CNN': [0.008610779318178993, 0.011119592430211326, 0.0113448794715377,  0.012545521873342846, 0.016862703348188804],
-
+        'Dwt-CNN': [0.00724546552021023],
         'Seq2seq': [0.025586652412964286, 0.025850599986989697, 0.025751402529643145,  0.027275779768103064 , 0.030541459731149287],
         'Self-boosted': [0.0068517864378336004, 0.008769284833771972, 0.00907317391521684, 0.010189584351223335, 0.010705994501009104]
 
@@ -100,7 +100,7 @@ def create_data_line(data_source, scaler):
 
     plot_data = scaler.transform(np.array(plot_data).reshape(-1, 1))
     spl = make_interp_spline(Points, plot_data, k=1)  # type: BSpline
-    xnew = np.linspace(min(Points), max(Points), 30)
+    xnew = np.linspace(min(Points), max(Points), 9)
     power_smooth = spl(xnew)
 
     return xnew, power_smooth
@@ -115,10 +115,10 @@ _, power_smooth_s = create_data_line('Self-boosted', scaler=scaler)
 # plt.plot(plot_data, linestyle='-', marker='o', color='#8ebad9')
 
 
-plt.plot(xnew, power_smooth_rnn, linestyle='-', color='purple')
-plt.plot(xnew, power_smooth_cnn, linestyle='-', color='green')
-plt.plot(xnew, power_smooth_seq2seq, linestyle='-', color='blue')
-plt.plot(xnew, power_smooth_s, linestyle='-', color='red')
+plt.plot(xnew, power_smooth_rnn, linestyle='-', marker='x', color='purple')
+plt.plot(xnew, power_smooth_cnn, linestyle='-', marker='o', color='green')
+plt.plot(xnew, power_smooth_seq2seq, linestyle='-', marker='*', color='blue')
+plt.plot(xnew, power_smooth_s, linestyle='-', marker='D', color='red')
 
 # plt.xticks(np.arange(1, 6, step=1))
 plt.xticks(np.arange(1, 6, step=1), ['t+1', 't+3', 't+5', 't+7', 't+9'])
