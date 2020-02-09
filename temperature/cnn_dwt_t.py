@@ -49,10 +49,10 @@ def RMSE(x):
 
 if __name__ == '__main__':
 
-    HORIZON = 1
+    HORIZON = 9
     EPOCHS = 50
 
-    time_step_lag = 12
+    time_step_lag = 6
 
     datasource = 'temperature'
     # datasource = 'temperature'
@@ -138,9 +138,9 @@ if __name__ == '__main__':
     y1_test = test_inputs['target_load']
     y1_test = y_scaler.inverse_transform(y1_test)
 
-    if not os.path.exists(output_dir + '/original_' + predict_component + '_lag' + str(time_step_lag) + '.csv'):
-        np.savetxt(output_dir + '/original_' + predict_component + '_lag' + str(time_step_lag) + '.csv', y1_test,
-                   delimiter=',', fmt='%s')
+    file_path = output_dir + '/original_' + predict_component + '_lag' + str(time_step_lag) + '_h' + str(HORIZON) + '.csv'
+    if not os.path.exists(file_path):
+        np.savetxt(file_path, y1_test, delimiter=',', fmt='%s')
 
     if predict_component == 'Observed':
         exit(0)

@@ -31,7 +31,7 @@ if __name__ == '__main__':
     time_step_lag = 6
 
     EPOCHS = 50
-    HORIZON = 9
+    HORIZON = 5
     datasource = 'electricity'
     # datasource = 'temperature'
     # datasource = 'exchange-rate'

@@ -50,7 +50,7 @@ def RMSE(x):
 
 if __name__ == '__main__':
 
-    HORIZON = 1
+    HORIZON = 7
     EPOCHS = 30
 
     time_step_lag = 6
@@ -60,10 +60,10 @@ if __name__ == '__main__':
     datasource = 'exchange-rate'
     mode = 'additive'
     # mode = 'multiplicative'
-    predict_component = 'Residual'
+    # predict_component = 'Residual'
     # predict_component = 'Trend'
     # predict_component = 'Seasonal'
-    # predict_component = 'Observed'
+    predict_component = 'Observed'
 
     data_dir = '/home/long/TTU-SOURCES/self-boosted-ts/data/seasonal'
     output_dir = '/home/long/TTU-SOURCES/self-boosted-ts/output/' + datasource + '/dwt/cnn'
