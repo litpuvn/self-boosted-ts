@@ -209,8 +209,8 @@ def create_model_mtl_mtv_electricity(horizon=1, nb_train_samples=512, batch_size
 
     model = KerasModel(inputs=[x, auxiliary_input], outputs=outputs)
 
-
-    model.compile(optimizer='sgd', loss='mse', metrics=['mse', 'mape', 'mae'], loss_weights=[0.5, 0.01, 0.01])
+    # adam optimizsor is good
+    model.compile(optimizer='adam', loss='mse', metrics=['mse', 'mape', 'mae'], loss_weights=[0.5, 0.01, 0.01])
     # model.compile(optimizer='adam', loss='mse', metrics=['mse', 'mape', 'mae'], loss_weights=[0.5, 0.5, 0.5])
     # model.compile(optimizer='adam', loss='mse', metrics=['mse'])
     # Callbacks
