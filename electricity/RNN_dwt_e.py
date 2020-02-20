@@ -52,7 +52,7 @@ if __name__ == '__main__':
     HORIZON = 1
     EPOCHS = 50
 
-    time_step_lag = 3
+    time_step_lag = 6
 
     datasource = 'electricity'
     # datasource = 'temperature'
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     from keras.layers import Conv1D, Dense, Flatten
     from keras.callbacks import EarlyStopping, ModelCheckpoint
 
-    LATENT_DIM = 5
+    LATENT_DIM = 16
     BATCH_SIZE = 32
 
     model = Sequential()

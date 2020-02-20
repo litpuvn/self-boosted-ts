@@ -84,7 +84,7 @@ if __name__ == '__main__':
     from keras.layers import Conv1D, Dense, Flatten
     from keras.callbacks import EarlyStopping, ModelCheckpoint
 
-    LATENT_DIM = 5
+    LATENT_DIM = 16
     KERNEL_SIZE = 2
 
     BATCH_SIZE = 32
